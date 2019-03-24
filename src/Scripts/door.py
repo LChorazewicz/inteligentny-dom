@@ -20,11 +20,11 @@ def main(args):
          state = int(args[2])
 
       if pin >= 0 and (state == 1 or state == 2):
-         if state == 1:
+         if state == 2:
             GPIO.setup(pin, GPIO.OUT)
             GPIO.output(pin, GPIO.HIGH)
 
-         if state == 2:
+         if state == 1:
             GPIO.setup(pin, GPIO.OUT)
             GPIO.output(pin, GPIO.LOW)
 
