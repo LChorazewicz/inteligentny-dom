@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}device{% endblock %}
+
+{% block body %}
+    <h1>device</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ device.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ device.name }}</td>
+            </tr>
+            <tr>
+                <th>state</th>
+                <td>{{ device.state }}</td>
+            </tr>
+            <tr>
+                <th>stateValue</th>
+                <td>{{ device.stateValue }}</td>
+            </tr>
+            <tr>
+                <th>deviceType</th>
+                <td>{{ device.deviceType }}</td>
+            </tr>
+            <tr>
+                <th>pin</th>
+                <td>{{ device.pin }}</td>
+            </tr>
+            <tr>
+                <th>status</th>
+                <td>{{ device.status ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('device_index') }}">back to list</a>
+
+    <a href="{{ path('device_edit', {'id': device.id}) }}">edit</a>
+
+    {{ include('device/_delete_form.html.twig') }}
+{% endblock %}
