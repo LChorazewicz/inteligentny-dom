@@ -2,10 +2,10 @@
 /.env.local.php
 /.env.*.local
 /public/bundles/
-/var/
-/vendor/
+var/
+vendor/
 .phpunit
 /phpunit.xml
 /.web-server-pid
-.idea/
+.idea
 .env
