@@ -1,18 +1,36 @@
 #!/usr/bin/python
 
-import sys, getopt
+import sys, getopt, time, os
+import RPi.GPIO as GPIO
 
-def main(argv):
-   pin = ''
-   try:
-      opts, args = getopt.getopt(argv,"p:")
-   except getopt.GetoptError:
-      print 'door.py -p <which pin>'
-      sys.exit(2)
-   for opt, arg in opts:
-      if opt == '-p':
-         pin = arg
-   print 1
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+
+def main(args):
+   pin = -1
+   state = -1
+   if len(args) == 1:
+      print "empty parameter list, using: door.py <pin> <state 1 = high, 2 = low>"
+   else:
+      if int(args[1]):
+         pin = int(args[1])
+
+      if int(args[2]):
+         state = int(args[2])
+
+      if pin >= 0 and (state == 1 or state == 2):
+         if state == 1:
+            GPIO.setup(pin, GPIO.OUT)
+            GPIO.output(pin, GPIO.HIGH)
+
+         if state == 2:
+            GPIO.setup(pin, GPIO.OUT)
+            GPIO.output(pin, GPIO.LOW)
+
+         print 1
+      else:
+         print 0
 
 if __name__ == "__main__":
-   main(sys.argv[1:])
+   main(sys.argv)

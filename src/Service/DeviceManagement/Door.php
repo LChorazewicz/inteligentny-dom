@@ -19,11 +19,11 @@ class Door
         $command = "cd ../src/Scripts && python door.py " . $pin;
         switch ($state){
             case StateType::LOCKED:{
-                $outputState = exec($command);
+                $outputState = exec($command  . " 1");
                 break;
             }
             case StateType::UNLOCKED:{
-                $outputState = exec($command);
+                $outputState = exec($command . " 2");
                 break;
             }
         }
