@@ -10,23 +10,32 @@ namespace App\Service\DeviceManagement;
 
 
 use App\Model\Device\StateType;
+use Psr\Log\LoggerInterface;
 
 class Door
 {
-    public function changeState(int $state, int $pin)
+    public function changeState(LoggerInterface $logger, int $state, int $pin)
     {
         $outputState = null;
         $command = "cd ../src/Scripts && python door.py " . $pin;
+        $logger->info("Change door state in progress", ['state' => $state, 'pin' => $pin]);
         switch ($state){
             case StateType::LOCKED:{
-                $outputState = exec($command  . " 1");
+                $command = $command  . " 1";
+                $logger->info("run ", ['command' => $command]);
+                $outputState = exec($command);
                 break;
             }
             case StateType::UNLOCKED:{
-                $outputState = exec($command . " 2");
+                $command = $command  . " 2";
+                $logger->info("run ", ['command' => $command]);
+                $outputState = exec($command);
                 break;
             }
         }
+
+        $logger->info('response status', ['output' => $outputState]);
+
         return $outputState;
     }
 

@@ -9,7 +9,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DashboardController extends AbstractController
 {
-
     /**
      * @var \App\Model\Device\Device
      */
@@ -20,11 +19,11 @@ class DashboardController extends AbstractController
         $this->deviceModel = $device;
     }
     /**
+     * @Route("/", name="home")
      * @Route("/dashboard", name="dashboard")
      */
     public function index()
     {
-
         return $this->render('dashboard/index.html.twig', [
             'devices' => $this->deviceModel->getAllDoorDevicesDto(),
         ]);

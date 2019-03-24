@@ -11,6 +11,7 @@ namespace App\Model\Device;
 
 use App\Repository\DeviceRepository;
 use App\Service\DeviceManagement\Door;
+use Psr\Log\LoggerInterface;
 
 class Device
 {
@@ -19,9 +20,15 @@ class Device
      */
     private $deviceRepository;
 
-    public function __construct(DeviceRepository $deviceRepository)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(DeviceRepository $deviceRepository, LoggerInterface $logger)
     {
         $this->deviceRepository = $deviceRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -61,7 +68,7 @@ class Device
         switch ($device->getDeviceType()){
             case DeviceType::DOOR: {
                 $deviceService = new Door();
-                $result = $deviceService->changeState($device->getState(), $device->getPin());
+                $result = $deviceService->changeState($this->logger, $device->getState(), $device->getPin());
                 if($result == 1){
                     $this->deviceRepository->update($device);
                 }
