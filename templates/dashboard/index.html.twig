@@ -8,20 +8,35 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 
-<div class="example-wrapper">
-    {#<h1>Hello {{ controller_name }}! ✅</h1>#}
-
+<div class="container">
     <form action="/change/state" method="post">
-
         {% for device in devices %}
-            <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="{{ device['deviceId'] }}"
+            {#<div class="custom-control custom-switch">#}
+                {#<input type="checkbox" class="custom-control-input" id="{{ device['deviceId'] }}"#}
 
-                {% if(device['state'] == 1) %}
+                {#{% if(device['state'] == 1) %}#}
+                        {#checked#}
+                {#{% endif %} onchange="changeState('{{ device['deviceId'] }}');">#}
+                {#<label class="custom-control-label" for="{{ device['deviceId'] }}">{{ device['deviceName'] }}</label>#}
+                {#<input type="hidden" name="{{ device['deviceId'] }}" id="hidden_{{ device['deviceId'] }}" value="{{ device['state'] }}">#}
+            {#</div>#}
+            <div class="card" style="width: 18rem;display: inline-flex;">
+                <img class="card-img-top" src="
+                    {% if(device['state'] == 1) %}
+                        {{ asset('img/locked.svg') }}
+                    {% elseif(device['state'] == 0) %}
+                        {{ asset('img/unlocked.svg') }}
+                    {% endif %}
+                    " alt="Card image cap">
+                <div class="card-body">
+                    <input type="checkbox" class="custom-control-input" id="{{ device['deviceId'] }}"
+
+                            {% if(device['state'] == 1) %}
                         checked
-                {% endif %} onchange="changeState('{{ device['deviceId'] }}');">
-                <label class="custom-control-label" for="{{ device['deviceId'] }}">{{ device['deviceName'] }}</label>
-                <input type="hidden" name="{{ device['deviceId'] }}" id="hidden_{{ device['deviceId'] }}" value="{{ device['state'] }}">
+                    {% endif %} onchange="changeState('{{ device['deviceId'] }}');">
+                    <label class="custom-control-label" for="{{ device['deviceId'] }}">{{ device['deviceName'] }}</label>
+                    <input type="hidden" name="{{ device['deviceId'] }}" id="hidden_{{ device['deviceId'] }}" value="{{ device['state'] }}">
+                </div>
             </div>
         {% endfor %}
 
