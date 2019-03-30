@@ -3,56 +3,23 @@
 {% block title %}Hello DashboardController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    {% for device in devices %}
+        <section onclick="
+                let application = new Application();
+                application.changeState({{ device['deviceId'] }})"
+                 class="tile bg-color-light-blue w-250" id="device-{{ device['deviceId'] }}">
+            <i class="icon state-icon
+                {% if(device['state'] == 1) %}
+                    icon-locked
+                {% elseif(device['state'] == 2) %}
+                    icon-unlocked
+                {% endif %}"></i>
+            <i class="icon icon-status-working"></i>
 
-<div class="container">
-    <form action="/change/state" method="post">
-        {% for device in devices %}
-            {#<div class="custom-control custom-switch">#}
-                {#<input type="checkbox" class="custom-control-input" id="{{ device['deviceId'] }}"#}
-
-                {#{% if(device['state'] == 1) %}#}
-                        {#checked#}
-                {#{% endif %} onchange="changeState('{{ device['deviceId'] }}');">#}
-                {#<label class="custom-control-label" for="{{ device['deviceId'] }}">{{ device['deviceName'] }}</label>#}
-                {#<input type="hidden" name="{{ device['deviceId'] }}" id="hidden_{{ device['deviceId'] }}" value="{{ device['state'] }}">#}
-            {#</div>#}
-            <div class="card" style="width: 18rem;display: inline-flex;">
-                <img class="card-img-top" src="
-                    {% if(device['state'] == 1) %}
-                        {{ asset('img/locked.svg') }}
-                    {% elseif(device['state'] == 0) %}
-                        {{ asset('img/unlocked.svg') }}
-                    {% endif %}
-                    " alt="Card image cap">
-                <div class="card-body">
-                    <input type="checkbox" class="custom-control-input" id="{{ device['deviceId'] }}"
-
-                            {% if(device['state'] == 1) %}
-                        checked
-                    {% endif %} onchange="changeState('{{ device['deviceId'] }}');">
-                    <label class="custom-control-label" for="{{ device['deviceId'] }}">{{ device['deviceName'] }}</label>
-                    <input type="hidden" name="{{ device['deviceId'] }}" id="hidden_{{ device['deviceId'] }}" value="{{ device['state'] }}">
-                </div>
-            </div>
-        {% endfor %}
-
-        <button>Aktualizuj</button>
-    </form>
-</div>
+            <span>{{ device['deviceName'] }}</span>
+        </section>
+    {% endfor %}
 {% endblock %}
-
 {% block javascripts %}
-<script>function changeState(id){
-        let input = document.getElementById(id);
-        let hiddenInput = document.getElementById("hidden_"+id);
-
-        let valueToSet = Boolean(input.checked) ? 1 : 2;
-
-        hiddenInput.setAttribute('value', valueToSet.toString());
-}</script>
 {% endblock %}
 

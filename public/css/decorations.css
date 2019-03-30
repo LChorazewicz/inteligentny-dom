@@ -1,0 +1,20 @@
+@font-face {
+    src: url('../font/Lato-Light.ttf');
+    font-face-name: Lato;
+}
+
+*{
+    font-family: Lato;
+}
+
+.bg-color-dark{
+    background-color: #343a40;
+}
+
+.bg-color-light{
+    background-color: #ccc;
+}
+
+.bg-color-light-blue{
+    background-color: #5eb5e0;
+}
