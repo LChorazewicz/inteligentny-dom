@@ -20,7 +20,7 @@ class Door
         $command = "cd ../src/Scripts && python door.py " . $pin;
         $logger->info("Change door state in progress", ['state' => $state, 'pin' => $pin]);
         switch ($state){
-            case StateType::LOCKED:{
+            case StateType::LOCKED_DOOR:{
                 $command = $command  . " 1";
                 $logger->info("run ", ['command' => $command]);
                 $outputState = exec($command);
