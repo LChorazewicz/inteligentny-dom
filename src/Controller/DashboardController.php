@@ -44,12 +44,13 @@ class DashboardController extends AbstractController
      */
     public function changestate(Request $request)
     {
-        $deviceId = 0;
+        $deviceId = $request->request->get('deviceId', null);
+
         if($request->isMethod(Request::METHOD_POST)){
-            $params = $request->request->all();
-            $device = $this->deviceModel->getDevice($params['deviceId']);
-            $deviceId = $device->getId();
-            $this->changeState->change($device);
+            $device = $this->deviceModel->getDevice($deviceId);
+            if(!empty($device)){
+                $this->changeState->change($device);
+            }
         }
 
         return new JsonResponse($this->deviceModel->getDeviceDto($deviceId));
