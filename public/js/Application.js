@@ -13,12 +13,12 @@ class Application {
                 switch (response.state) {
                     case 1:{
                         let icon = $('#device-' + deviceId + " .state-icon");
-                        icon.removeClass('icon-locked').addClass('icon-unlocked');
+                        icon.removeClass('icon-unlocked').addClass('icon-locked');
                         break;
                     }
                     case 2:{
                         let icon = $('#device-' + deviceId + " .state-icon");
-                        icon.removeClass('icon-unlocked').addClass('icon-locked');
+                        icon.removeClass('icon-locked').addClass('icon-unlocked');
                         break;
                     }
                 }
