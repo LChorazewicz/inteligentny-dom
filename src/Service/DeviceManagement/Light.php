@@ -55,6 +55,6 @@ class Light implements DeviceChangeStateInterface
 
         $this->logger->info('response status', ['output' => $outputState]);
 
-        return 1;
+        return $outputState;
     }
 }

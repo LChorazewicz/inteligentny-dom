@@ -55,7 +55,7 @@ class Door
 
         $this->logger->info('response status', ['output' => $outputState]);
 
-        return 1;
+        return $outputState;
     }
 
 }
