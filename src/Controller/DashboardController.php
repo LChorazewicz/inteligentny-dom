@@ -43,7 +43,7 @@ class DashboardController extends AbstractController
         if($request->isMethod(Request::METHOD_POST)){
             $params = $request->request->all();
             $device = $this->deviceModel->getDevice($params['deviceId']);
-
+            $deviceId = $device->getId();
             switch ($device->getDeviceType()){
                 case DeviceType::DOOR:{
                     switch ($device->getState()){

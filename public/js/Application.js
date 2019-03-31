@@ -13,7 +13,7 @@ class Application {
                 switch (response.state) {
                     case 1:{
                         let icon = $('#device-' + deviceId + " .state-icon");
-                        icon.remove('icon-locked').addClass('icon-unlocked');
+                        icon.removeClass('icon-locked').addClass('icon-unlocked');
                         break;
                     }
                     case 2:{
