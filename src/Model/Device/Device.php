@@ -11,6 +11,7 @@ namespace App\Model\Device;
 
 use App\Repository\DeviceRepository;
 use App\Service\DeviceManagement\Door;
+use App\Service\DeviceManagement\Light;
 use Psr\Log\LoggerInterface;
 
 class Device
@@ -65,26 +66,32 @@ class Device
     }
 
     /**
-     * @param \App\Entity\Device $device
+     * @param \App\Entity\Device $deviceEntity
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updateState(\App\Entity\Device $device)
+    public function updateState(\App\Entity\Device $deviceEntity)
     {
         $result = null;
-        switch ($device->getDeviceType()){
+        $device = null;
+        switch ($deviceEntity->getDeviceType()){
             case DeviceType::DOOR: {
-                $deviceService = new Door();
-                $result = $deviceService->changeState($this->logger, $device->getState(), $device->getPin());
-                if($result == 1){
-                    $this->deviceRepository->update($device);
-                }
-                break;
+                $device = new Door($this->logger); break;
+            }
+            case DeviceType::LIGHT:{
+                $device = new Light($this->logger); break;
             }
             default:{
                 throw new \Exception("unknown device type");
             }
         }
+
+        $result = $device->changeState($deviceEntity->getState(), $deviceEntity->getPin());
+
+        if($result == 1){
+            $this->deviceRepository->update($deviceEntity);
+        }
+
     }
 
     public function getDeviceDto($deviceId)

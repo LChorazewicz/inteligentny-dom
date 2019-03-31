@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: leszek
- * Date: 16.03.19
- * Time: 13:09
+ * Date: 31.03.19
+ * Time: 22:52
  */
 
 namespace App\Service\DeviceManagement;
@@ -12,7 +12,7 @@ namespace App\Service\DeviceManagement;
 use App\Model\Device\StateType;
 use Psr\Log\LoggerInterface;
 
-class Door
+class Light implements DeviceChangeStateInterface
 {
     /**
      * @var LoggerInterface
@@ -20,7 +20,7 @@ class Door
     private $logger;
 
     /**
-     * Door constructor.
+     * Light constructor.
      * @param LoggerInterface $logger
      */
     public function __construct(LoggerInterface $logger)
@@ -37,7 +37,7 @@ class Door
     {
         $outputState = null;
         $command = "cd ../src/Scripts && python door.py " . $pin;
-        $this->logger->info("Change door state in progress", ['state' => $state, 'pin' => $pin]);
+        $this->logger->info("Change light state in progress", ['state' => $state, 'pin' => $pin]);
         switch ($state){
             case StateType::UNLOCKED_DOOR:{
                 $command = $command  . " 1";
@@ -57,5 +57,4 @@ class Door
 
         return 1;
     }
-
 }
