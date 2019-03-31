@@ -19,7 +19,7 @@ class DeviceType extends AbstractType
     {
         $builder
             ->add('name', TextType::class)
-            ->add('state', ChoiceType::class, ['choices' => [StateType::LOCKED, StateType::UNLOCKED]])
+            ->add('state', ChoiceType::class, ['choices' => [StateType::LOCKED_DOOR, StateType::UNLOCKED_DOOR]])
             ->add('stateValue', IntegerType::class, ['required' => false])
             ->add('deviceType', ChoiceType::class, ['choices' => [
                 \App\Model\Device\DeviceType::DOOR,

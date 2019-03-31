@@ -13,6 +13,10 @@
                     icon-locked
                 {% elseif(device['state'] == 2) %}
                     icon-unlocked
+                {% elseif(device['state'] == 3) %}
+                    icon-turned-on
+                {% elseif(device['state'] == 4) %}
+                    icon-turned-off
                 {% endif %}"></i>
             <i class="icon icon-status-working"></i>
 

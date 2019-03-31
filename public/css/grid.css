@@ -15,19 +15,6 @@
     padding: 0 20px;
 }
 
-/*.col-1-sm{*/
-    /*min-width: 64px;*/
-/*}*/
-
-/*.col-3-sm{*/
-    /*display: block;*/
-    /*min-width: 300px;*/
-    /*width: 600px;*/
-/*}*/
-
-/*.col-11-sm{*/
-    /*width: 600px;*/
-/*}*/
 .w-250{
     width: 250px;
 }
@@ -38,6 +25,10 @@
 @media only screen and (max-width: 600px){
     .hide-if-less-than-600{
         display: none;
+    }
+
+    .show-if-less-than-600{
+        display: block;
     }
 
     [class*="col-"] {

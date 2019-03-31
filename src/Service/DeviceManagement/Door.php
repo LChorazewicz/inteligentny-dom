@@ -26,7 +26,7 @@ class Door
                 $outputState = exec($command);
                 break;
             }
-            case StateType::UNLOCKED:{
+            case StateType::UNLOCKED_DOOR:{
                 $command = $command  . " 2";
                 $logger->info("run ", ['command' => $command]);
                 $outputState = exec($command);

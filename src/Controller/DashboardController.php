@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Model\Device\DeviceType;
 use App\Model\Device\StateType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,7 +27,7 @@ class DashboardController extends AbstractController
     public function index()
     {
         return $this->render('dashboard/index.html.twig', [
-            'devices' => $this->deviceModel->getAllDoorDevicesDto(),
+            'devices' => $this->deviceModel->findAllDevicesDto(),
         ]);
     }
 
@@ -36,48 +37,55 @@ class DashboardController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function changedoorstate(Request $request)
+    public function changestate(Request $request)
     {
+        $deviceId = 0;
         if($request->isMethod(Request::METHOD_POST)){
             $params = $request->request->all();
             $device = $this->deviceModel->getDevice($params['deviceId']);
-            switch ($device->getState()){
-                case StateType::UNLOCKED:{
-                    if($device->getState() == StateType::UNLOCKED){
-                        $device->setState(StateType::LOCKED);
-                        $this->deviceModel->updateState($device);
+
+            switch ($device->getDeviceType()){
+                case DeviceType::DOOR:{
+                    switch ($device->getState()){
+                        case StateType::UNLOCKED_DOOR:{
+                            if($device->getState() == StateType::UNLOCKED_DOOR){
+                                $device->setState(StateType::LOCKED_DOOR);
+                                $this->deviceModel->updateState($device);
+                            }
+                            break;
+                        }
+                        case StateType::LOCKED_DOOR:{
+                            if($device->getState() == StateType::LOCKED_DOOR){
+                                $device->setState(StateType::UNLOCKED_DOOR);
+                                $this->deviceModel->updateState($device);
+                            }
+                            break;
+                        }
                     }
                     break;
                 }
-                case StateType::LOCKED:{
-                    if($device->getState() == StateType::LOCKED){
-                        $device->setState(StateType::UNLOCKED);
-                        $this->deviceModel->updateState($device);
+                case DeviceType::LIGHT:{
+                    switch ($device->getState()){
+                        case StateType::TURNED_ON_LIGHT:{
+                            if($device->getState() == StateType::TURNED_OFF_LIGHT){
+                                $device->setState(StateType::TURNED_ON_LIGHT);
+                                $this->deviceModel->updateState($device);
+                            }
+                            break;
+                        }
+                        case StateType::TURNED_OFF_LIGHT:{
+                            if($device->getState() == StateType::TURNED_ON_LIGHT){
+                                $device->setState(StateType::TURNED_OFF_LIGHT);
+                                $this->deviceModel->updateState($device);
+                            }
+                            break;
+                        }
                     }
                     break;
                 }
             }
         }
 
-        return new JsonResponse([
-            'deviceId' => $device->getId(),
-            'state' => $device->getState()
-        ]);
-    }
-
-    private function mapToDeviceState($newValue)
-    {
-        $return = null;
-        switch ($newValue){
-            case 'lock':{
-                $return = 'lock';
-                break;
-            }
-            case 'unlock':{
-                $return = 'unlock';
-                break;
-            }
-        }
-        return $return;
+        return new JsonResponse($this->deviceModel->getDeviceDto($deviceId));
     }
 }

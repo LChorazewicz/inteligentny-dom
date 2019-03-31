@@ -34,16 +34,23 @@ class Device
     /**
      * @return Dto[]
      */
-    public function getAllDoorDevicesDto()
+    public function findAllDevicesDto()
     {
-        $result = $this->deviceRepository->findAllDoorDevices();
+        $result = $this->deviceRepository->findAllDevices();
         $dtos = [];
         foreach ($result as $device){
-            $dto = new Dto();
-            $dto->deviceId = $device->getId();
-            $dto->deviceName = $device->getName();
-            $dto->state = $device->getState();
-            $dtos[$device->getId()] = (array)$dto;
+            $deviceDto = new Dto();
+            $deviceDto->deviceId = $device->getId();
+            $deviceDto->deviceName = $device->getName();
+            $deviceDto->state = $device->getState();
+            $deviceDto->stateName = $this->mapStateName($device->getDeviceType(), $device->getState());
+            $deviceDto->stateValue = $device->getStateValue();
+            $deviceDto->deviceType = $device->getDeviceType();
+            $deviceDto->deviceTypeName = $this->mapDeviceTypeName($device->getDeviceType());
+            $deviceDto->pin = $device->getPin();
+            $deviceDto->status = $device->getStatus();
+            $devicesDto[] = $deviceDto;
+            $dtos[$device->getId()] = (array)$deviceDto;
         }
         return $dtos;
     }
@@ -79,4 +86,75 @@ class Device
             }
         }
     }
+
+    public function getDeviceDto($deviceId)
+    {
+        $device = $this->deviceRepository->findDevice($deviceId);
+        $response = [];
+        if(!empty($device)){
+            $deviceDto = new Dto();
+            $deviceDto->deviceId = $device->getId();
+            $deviceDto->deviceName = $device->getName();
+            $deviceDto->state = $device->getState();
+            $deviceDto->stateName = $this->mapStateName($device->getDeviceType(), $device->getState());
+            $deviceDto->stateValue = $device->getStateValue();
+            $deviceDto->deviceType = $device->getDeviceType();
+            $deviceDto->deviceTypeName = $this->mapDeviceTypeName($device->getDeviceType());
+            $deviceDto->pin = $device->getPin();
+            $deviceDto->status = $device->getStatus();
+            $response = $deviceDto;
+        }
+        return $response;
+    }
+
+    private function mapStateName(int $deviceType, int $deviceState)
+    {
+        $result = "";
+        switch ($deviceType){
+            case DeviceType::DOOR:{
+                switch ($deviceState){
+                    case StateType::LOCKED_DOOR:{
+                        $result = "Locked";
+                        break;
+                    }
+                    case StateType::UNLOCKED_DOOR:{
+                        $result = "Unlocked";
+                        break;
+                    }
+                }
+                break;
+            }
+            case DeviceType::LIGHT:{
+                switch ($deviceState){
+                    case StateType::TURNED_ON_LIGHT:{
+                        $result = "Turned on";
+                        break;
+                    }
+                    case StateType::TURNED_OFF_LIGHT:{
+                        $result = "Turned off";
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        return $result;
+    }
+
+    private function mapDeviceTypeName(int $deviceType)
+    {
+        $result = "";
+        switch ($deviceType){
+            case DeviceType::DOOR:{
+                $result = "Door";
+                break;
+            }
+            case DeviceType::LIGHT:{
+                $result = "Door";
+                break;
+            }
+        }
+        return $result;
+    }
+
 }

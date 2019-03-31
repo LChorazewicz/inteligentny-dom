@@ -17,13 +17,13 @@ class DeviceController extends AbstractController
 {
     /**
      * @Route("/", name="device_index", methods={"GET"})
-     * @param DeviceRepository $deviceRepository
+     * @param \App\Model\Device\Device $deviceModel
      * @return Response
      */
-    public function index(DeviceRepository $deviceRepository): Response
+    public function index(\App\Model\Device\Device $deviceModel): Response
     {
         return $this->render('device/index.html.twig', [
-            'devices' => $deviceRepository->findAll(),
+            'devices' => $deviceModel->findAllDevicesDto(),
         ]);
     }
 
@@ -54,13 +54,14 @@ class DeviceController extends AbstractController
 
     /**
      * @Route("/{id}", name="device_show", methods={"GET"})
-     * @param Device $device
+     * @param \App\Model\Device\Device $deviceModel
+     * @param $id
      * @return Response
      */
-    public function show(Device $device): Response
+    public function show(\App\Model\Device\Device $deviceModel, $id): Response
     {
         return $this->render('device/show.html.twig', [
-            'device' => $device,
+            'device' => $deviceModel->getDeviceDto($id),
         ]);
     }
 

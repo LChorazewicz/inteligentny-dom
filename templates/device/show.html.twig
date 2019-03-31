@@ -9,15 +9,15 @@
         <tbody>
             <tr>
                 <th>Id</th>
-                <td>{{ device.id }}</td>
+                <td>{{ device.deviceId }}</td>
             </tr>
             <tr>
                 <th>Name</th>
-                <td>{{ device.name }}</td>
+                <td>{{ device.deviceName }}</td>
             </tr>
             <tr>
                 <th>state</th>
-                <td>{{ device.state }}</td>
+                <td>{{ device.stateName }}</td>
             </tr>
             <tr>
                 <th>stateValue</th>
@@ -25,7 +25,7 @@
             </tr>
             <tr>
                 <th>deviceType</th>
-                <td>{{ device.deviceType }}</td>
+                <td>{{ device.deviceTypeName }}</td>
             </tr>
             <tr>
                 <th>pin</th>
@@ -40,7 +40,11 @@
 
     <a href="{{ path('device_index') }}">back to list</a>
 
-    <a href="{{ path('device_edit', {'id': device.id}) }}">edit</a>
+    <a href="{{ path('device_edit', {'id': device.deviceId}) }}">edit</a>
 
-    {{ include('device/_delete_form.html.twig') }}
+    <form method="post" action="{{ path('device_delete', {'id': device.deviceId}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+        <input type="hidden" name="_method" value="DELETE">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ device.deviceId) }}">
+        <button class="btn">Delete</button>
+    </form>
 {% endblock %}

@@ -11,6 +11,8 @@ namespace App\Model\Device;
 
 class StateType
 {
-    const LOCKED = 1;
-    const UNLOCKED = 2;
+    const LOCKED_DOOR = 1;
+    const UNLOCKED_DOOR = 2;
+    const TURNED_ON_LIGHT = 3;
+    const TURNED_OFF_LIGHT = 4;
 }

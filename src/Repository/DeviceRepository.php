@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Device;
 use App\Model\Device\DeviceType;
+use App\Model\Device\Dto;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -23,9 +24,9 @@ class DeviceRepository extends ServiceEntityRepository
     /**
      * @return Device[]
      */
-    public function findAllDoorDevices()
+    public function findAllDevices()
     {
-        return $this->findBy(['deviceType' => DeviceType::DOOR, 'status' => 1]);
+        return $this->findBy(['status' => 1]);
     }
 
     /**
@@ -37,5 +38,14 @@ class DeviceRepository extends ServiceEntityRepository
     {
         $this->getEntityManager()->persist($device);
         $this->getEntityManager()->flush();
+    }
+
+    /**
+     * @param $deviceId
+     * @return Device
+     */
+    public function findDevice($deviceId)
+    {
+        return $this->findOneBy(['id' => $deviceId, 'status' => 1]);
     }
 }

@@ -26,4 +26,9 @@ class Application {
             }
         });
     }
+
+    static toggleNavigation(){
+        let menu = $(".menu");
+        menu.toggleClass("open");
+    }
 }
