@@ -32,6 +32,7 @@ class Door
      * @param int $state
      * @param int $pin
      * @return string|null
+     * @throws \Exception
      */
     public function changeState(int $state, int $pin)
     {
@@ -51,6 +52,8 @@ class Door
                 $outputState = exec($command);
                 break;
             }
+            default:
+                throw new \Exception("Unknown state type " . $state);
         }
 
         $this->logger->info('response status', ['output' => $outputState]);

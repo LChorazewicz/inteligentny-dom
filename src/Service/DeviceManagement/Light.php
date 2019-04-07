@@ -32,6 +32,7 @@ class Light implements DeviceChangeStateInterface
      * @param int $state
      * @param int $pin
      * @return string|null
+     * @throws \Exception
      */
     public function changeState(int $state, int $pin)
     {
@@ -39,18 +40,20 @@ class Light implements DeviceChangeStateInterface
         $command = "cd ../src/Scripts && python light.py " . $pin;
         $this->logger->info("Change light state in progress", ['state' => $state, 'pin' => $pin]);
         switch ($state){
-            case StateType::UNLOCKED_DOOR:{
+            case StateType::TURNED_ON_LIGHT:{
                 $command = $command  . " 1";
                 $this->logger->info("run ", ['command' => $command]);
                 $outputState = exec($command);
                 break;
             }
-            case StateType::LOCKED_DOOR:{
+            case StateType::TURNED_OFF_LIGHT:{
                 $command = $command  . " 2";
                 $this->logger->info("run ", ['command' => $command]);
                 $outputState = exec($command);
                 break;
             }
+            default:
+                throw new \Exception("Unknown state type " . $state);
         }
 
         $this->logger->info('response status', ['output' => $outputState]);

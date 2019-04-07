@@ -69,6 +69,7 @@ class Device
      * @param \App\Entity\Device $deviceEntity
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Exception
      */
     public function updateState(\App\Entity\Device $deviceEntity)
     {
