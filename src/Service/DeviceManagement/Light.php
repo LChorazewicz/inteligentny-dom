@@ -36,7 +36,7 @@ class Light implements DeviceChangeStateInterface
     public function changeState(int $state, int $pin)
     {
         $outputState = null;
-        $command = "cd ../src/Scripts && python door.py " . $pin;
+        $command = "cd ../src/Scripts && python light.py " . $pin;
         $this->logger->info("Change light state in progress", ['state' => $state, 'pin' => $pin]);
         switch ($state){
             case StateType::UNLOCKED_DOOR:{
