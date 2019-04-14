@@ -34,20 +34,27 @@ class DeviceController extends AbstractController
     public function new(Request $request): Response
     {
         $device = new Device();
-        $form = $this->createForm(DeviceType::class, $device);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($device);
-            $entityManager->flush();
-
+        if($request->isMethod(Request::METHOD_POST)){
+            $device->setStatus(true);
+            $device->setDeviceType(1);
+            $device->setName("");
+            $device->setStateValue(null);
             return $this->redirectToRoute('device_index');
         }
+//        $form = $this->createForm(DeviceType::class, $device);
+//        $form->handleRequest($request);
+
+//        if ($form->isSubmitted() && $form->isValid()) {
+//            $entityManager = $this->getDoctrine()->getManager();
+//            $entityManager->persist($device);
+//            $entityManager->flush();
+
+//            return $this->redirectToRoute('device_index');
+//        }
 
         return $this->render('device/new.html.twig', [
-            'device' => $device,
-            'form' => $form->createView(),
+            'device' => $device
         ]);
     }
 

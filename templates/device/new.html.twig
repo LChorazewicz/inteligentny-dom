@@ -5,7 +5,116 @@
 {% block body %}
     <h1>Create new device</h1>
 
-    {{ include('device/_form.html.twig') }}
+    <form action="{{ path('device_new') }}" method="post">
+        <br><label for="name">Device name</label>
+        <input type="text" name="name" id="name"><br>
+
+        <label for="type">Device type</label>
+        <select name="type" id="type" onchange="operation(this)">
+            <option value="none" disabled selected>-- select --</option>
+            <option value="door">Door</option>
+            <option value="blinds" >Blinds</option>
+            <option value="light">Light</option>
+        </select><br>
+
+        <div id="box-state" style="display: none;">
+            <label for="state">Default state</label>
+            <select name="state" id="state" onchange="operation(this)">
+                <option value="none" disabled selected>-- select --</option>
+                <optgroup id="door-group" label="Door" style="display: none;">
+                    <option value="locked">Locked</option>
+                    <option value="unlocked">Unlocked</option>
+                </optgroup>
+                <optgroup id="light-group" label="Light" style="display: none;">
+                    <option value="turned-on">Turned on</option>
+                    <option value="turned-off">Turned off</option>
+                </optgroup>
+                <optgroup id="blinds-group" label="Blinds" style="display: none;">
+                    <option value="rolled-up">Rolled up</option>
+                    <option value="rolled-down">Rolled down</option>
+                </optgroup>
+            </select><br><br>
+        </div>
+
+
+        <div id="box-number-of-turns" style="display: none;">
+            <label for="number-of-turns">Number of engine turns to <span></span></label>
+            <input type="number" name="number-of-turns" id="number-of-turns"><br>
+        </div><br>
+        <button>add</button>
+    </form><br>
+
 
     <a href="{{ path('device_index') }}">back to list</a>
+{% endblock %}
+
+{% block javascripts%}
+    <script>
+        function operation(context) {
+            switch (context.id) {
+                case "type": {
+                    switch (context.value) {
+                        case "blinds":{
+                            $("#box-state").show();
+
+                            $("#blinds-group").show();
+
+                            $("#light-group").hide();
+                            $("#door-group").hide();
+
+                            break;
+                        }
+                        case "door":{
+                            $("#box-state").show();
+
+                            $("#door-group").show();
+
+                            $("#blinds-group").hide();
+                            $("#light-group").hide();
+                            $("#box-number-of-turns").hide();
+
+                            break;
+                        }
+                        case "light":{
+                            $("#box-state").show();
+
+                            $("#light-group").show();
+
+                            $("#blinds-group").hide();
+                            $("#door-group").hide();
+                            $("#box-number-of-turns").hide();
+
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case "state": {
+                    switch (context.value) {
+                        case "rolled-up":{
+                            let element = $("#box-number-of-turns"),
+                                span = element.find("label").find("span")[0];
+
+                            span.innerHTML = "roll down";
+                            element.show();
+                            break;
+                        }
+                        case "rolled-down": {
+                            let element = $("#box-number-of-turns"),
+                                span = element.find("label").find("span")[0];
+
+                            span.innerHTML = "roll up";
+                            element.show();
+                            break;
+                        }
+                        default: {
+                            $("#box-number-of-turns").hide();
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    </script>
 {% endblock %}
