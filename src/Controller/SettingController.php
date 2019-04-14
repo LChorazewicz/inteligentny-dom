@@ -16,4 +16,28 @@ class SettingController extends AbstractController
             'controller_name' => 'SettingController',
         ]);
     }
+
+    /**
+     * @Route("/motor-up", name="motor-up")
+     */
+    public function motorup()
+    {
+        $command = "cd ../src/Scripts && python motor.py ";
+        exec($command);
+        return $this->render('setting/index.html.twig', [
+            'controller_name' => 'SettingController',
+        ]);
+    }
+
+    /**
+     * @Route("/motor-down", name="motor-down")
+     */
+    public function motordown()
+    {
+        $command = "cd ../src/Scripts && python motor2.py ";
+        exec($command);
+        return $this->render('setting/index.html.twig', [
+            'controller_name' => 'SettingController',
+        ]);
+    }
 }

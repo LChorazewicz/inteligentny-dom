@@ -24,3 +24,7 @@ services:
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
+
+    raspberry.service:
+        class: App\Service\RaspberryService\RaspberryService
+        arguments: ['@App\Repository\PinRepository']
