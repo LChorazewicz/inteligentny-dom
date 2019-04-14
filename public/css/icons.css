@@ -67,3 +67,9 @@ i.icon{
     width: 40px;
     height: 40px;
 }
+
+.icon-cctv {
+    background-image: url("../img/cctv.svg");
+    width: 40px;
+    height: 40px;
+}
