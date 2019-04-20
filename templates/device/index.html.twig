@@ -9,9 +9,10 @@
                 <th>Id</th>
                 <th>Name</th>
                 <th>state</th>
-                <th>stateValue</th>
                 <th>deviceType</th>
-                <th>pin</th>
+                <th>pins</th>
+                <th>Turns to open/close</th>
+                <th>Current turn</th>
                 <th>status</th>
                 <th>actions</th>
             </tr>
@@ -22,10 +23,11 @@
                 <td>{{ device.deviceId }}</td>
                 <td>{{ device.deviceName }}</td>
                 <td>{{ device.stateName }}</td>
-                <td>{{ device.stateValue }}</td>
                 <td>{{ device.deviceTypeName }}</td>
-                <td>{{ device.pin }}</td>
-                <td>{{ device.status ? 'Yes' : 'No' }}</td>
+                <td>{{ device.pins|default('None') }}</td>
+                <td>{{ device.turns|default('None') }}</td>
+                <td>{{ device.currentTurn|default('None') }}</td>
+                <td>{{ device.status ? 'Active' : 'Inactive' }}</td>
                 <td>
                     <a href="{{ path('device_show', {'id': device.deviceId}) }}">show</a>
                     <a href="{{ path('device_edit', {'id': device.deviceId}) }}">edit</a>

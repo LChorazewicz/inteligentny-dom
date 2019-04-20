@@ -15,5 +15,5 @@ interface DeviceChangeStateInterface
 {
     public function __construct(LoggerInterface $logger);
 
-    public function changeState(int $state, int $pin);
+    public function changeState(int $state, array $pins, int $turns);
 }

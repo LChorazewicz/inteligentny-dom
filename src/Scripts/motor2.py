@@ -12,7 +12,7 @@ for pin in ControlPin:
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, 0)
 
-seq = [[1,0,0,1],
+seq = [ [1,0,0,1],
         [0,0,0,1],
         [0,0,1,1],
         [0,0,1,0],

@@ -20,20 +20,24 @@
                 <td>{{ device.stateName }}</td>
             </tr>
             <tr>
-                <th>stateValue</th>
-                <td>{{ device.stateValue }}</td>
-            </tr>
-            <tr>
                 <th>deviceType</th>
                 <td>{{ device.deviceTypeName }}</td>
             </tr>
             <tr>
-                <th>pin</th>
-                <td>{{ device.pin }}</td>
+                <th>pins</th>
+                <td>{{ device.pins|default('None') }}</td>
+            </tr>
+            <tr>
+                <th>Turns to open/close</th>
+                <td>{{ device.turns|default('None') }}</td>
+            </tr>
+            <tr>
+                <th>Current turn</th>
+                <td>{{ device.currentTurn|default('None') }}</td>
             </tr>
             <tr>
                 <th>status</th>
-                <td>{{ device.status ? 'Yes' : 'No' }}</td>
+                <td>{{ device.status ? 'Acrive' : 'Inactive' }}</td>
             </tr>
         </tbody>
     </table>

@@ -16,6 +16,10 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class DeviceRepository extends ServiceEntityRepository
 {
+    /**
+     * DeviceRepository constructor.
+     * @param RegistryInterface $registry
+     */
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, Device::class);
@@ -27,6 +31,17 @@ class DeviceRepository extends ServiceEntityRepository
     public function findAllDevices()
     {
         return $this->findBy(['status' => 1]);
+    }
+
+    /**
+     * @param Device $device
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function add(Device $device)
+    {
+        $this->getEntityManager()->persist($device);
+        $this->getEntityManager()->flush();
     }
 
     /**

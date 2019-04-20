@@ -25,14 +25,14 @@ class DeviceType extends AbstractType
                 'Light' => \App\Model\Device\DeviceType::LIGHT
             ]])
             ->add('state', ChoiceType::class, ['choices' => [
-                'Locked' => StateType::LOCKED_DOOR,
-                'Unlocked' => StateType::UNLOCKED_DOOR,
-                'Turned on' => StateType::TURNED_ON_LIGHT,
-                'Turned off' => StateType::TURNED_OFF_LIGHT,
+                'Locked' => StateType::DOOR_LOCKED,
+                'Unlocked' => StateType::DOOR_UNLOCKED,
+                'Turned on' => StateType::LIGHT_TURNED_ON,
+                'Turned off' => StateType::LIGHT_TURNED_OFF,
             ]])
             ->add('stateValue', IntegerType::class, ['required' => false])
 
-            ->add('pin', NumberType::class)
+            ->add('pins', NumberType::class)
             ->add('status', ChoiceType::class, ['choices' => [
                 StatusType::ACTIVE => 'active',
                 StatusType::INACTIVE => 'inactive',

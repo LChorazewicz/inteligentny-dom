@@ -10,6 +10,7 @@ namespace App\Model\Device;
 
 
 use App\Repository\DeviceRepository;
+use App\Service\DeviceManagement\Blinds;
 use App\Service\DeviceManagement\Door;
 use App\Service\DeviceManagement\Light;
 use Psr\Log\LoggerInterface;
@@ -45,10 +46,11 @@ class Device
             $deviceDto->deviceName = $device->getName();
             $deviceDto->state = $device->getState();
             $deviceDto->stateName = $this->mapStateName($device->getDeviceType(), $device->getState());
-            $deviceDto->stateValue = $device->getStateValue();
             $deviceDto->deviceType = $device->getDeviceType();
             $deviceDto->deviceTypeName = $this->mapDeviceTypeName($device->getDeviceType());
-            $deviceDto->pin = $device->getPin();
+            $deviceDto->pins = empty($device->getPins()) ? null : $device->getPins();
+            $deviceDto->turns = empty($device->getTurns()) ? null : $device->getTurns();
+            $deviceDto->currentTurn = empty($device->getTurns()) ? null : $device->getCurrentTurn();
             $deviceDto->status = $device->getStatus();
             $devicesDto[] = $deviceDto;
             $dtos[$device->getId()] = (array)$deviceDto;
@@ -63,6 +65,43 @@ class Device
     public function getDevice(int $deviceId)
     {
         return $this->deviceRepository->findOneBy(['id' => $deviceId, 'status' => 1]);
+    }
+
+    /**
+     * @param \App\Entity\Device $device
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Exception
+     */
+    public function addDevice(\App\Entity\Device $device)
+    {
+        $knownState = false;
+        switch ($device->getDeviceType()){
+            case DeviceType::DOOR:{
+                if(in_array($device->getState(), StateType::getDoorStates())){
+                    $knownState = true;
+                }
+                break;
+            }
+            case DeviceType::LIGHT:{
+                if(in_array($device->getState(), StateType::getLightStates())){
+                    $knownState = true;
+                }
+                break;
+            }
+            case DeviceType::BLINDS:{
+                if(in_array($device->getState(), StateType::getBlindsStates())){
+                    $knownState = true;
+                }
+                break;
+            }
+        }
+
+        if(!$knownState){
+            throw new \Exception("Unknown device");
+        }
+
+        return $this->deviceRepository->add($device);
     }
 
     /**
@@ -82,12 +121,15 @@ class Device
             case DeviceType::LIGHT:{
                 $device = new Light($this->logger); break;
             }
+            case DeviceType::BLINDS:{
+                $device = new Blinds($this->logger); break;
+            }
             default:{
                 throw new \Exception("unknown device type");
             }
         }
 
-        $result = $device->changeState($deviceEntity->getState(), $deviceEntity->getPin());
+        $result = $device->changeState($deviceEntity->getState(), $deviceEntity->getPins());
 
         if($result == 1){
             $this->deviceRepository->update($deviceEntity);
@@ -105,11 +147,12 @@ class Device
             $deviceDto->deviceName = $device->getName();
             $deviceDto->state = $device->getState();
             $deviceDto->stateName = $this->mapStateName($device->getDeviceType(), $device->getState());
-            $deviceDto->stateValue = $device->getStateValue();
             $deviceDto->deviceType = $device->getDeviceType();
             $deviceDto->deviceTypeName = $this->mapDeviceTypeName($device->getDeviceType());
-            $deviceDto->pin = $device->getPin();
             $deviceDto->status = $device->getStatus();
+            $deviceDto->pins = empty($device->getPins()) ? null : $device->getPins();
+            $deviceDto->turns = empty($device->getTurns()) ? null : $device->getTurns();
+            $deviceDto->currentTurn = empty($device->getTurns()) ? null : $device->getCurrentTurn();
             $response = $deviceDto;
         }
         return $response;
@@ -121,11 +164,11 @@ class Device
         switch ($deviceType){
             case DeviceType::DOOR:{
                 switch ($deviceState){
-                    case StateType::LOCKED_DOOR:{
+                    case StateType::DOOR_LOCKED:{
                         $result = "Locked";
                         break;
                     }
-                    case StateType::UNLOCKED_DOOR:{
+                    case StateType::DOOR_UNLOCKED:{
                         $result = "Unlocked";
                         break;
                     }
@@ -134,12 +177,25 @@ class Device
             }
             case DeviceType::LIGHT:{
                 switch ($deviceState){
-                    case StateType::TURNED_ON_LIGHT:{
+                    case StateType::LIGHT_TURNED_ON:{
                         $result = "Turned on";
                         break;
                     }
-                    case StateType::TURNED_OFF_LIGHT:{
+                    case StateType::LIGHT_TURNED_OFF:{
                         $result = "Turned off";
+                        break;
+                    }
+                }
+                break;
+            }
+            case DeviceType::BLINDS:{
+                switch ($deviceState){
+                    case StateType::BLINDS_ROLLED_UP:{
+                        $result = "Rolled up";
+                        break;
+                    }
+                    case StateType::BLINDS_ROLLED_DOWN:{
+                        $result = "Rolled down";
                         break;
                     }
                 }
@@ -158,7 +214,11 @@ class Device
                 break;
             }
             case DeviceType::LIGHT:{
-                $result = "Door";
+                $result = "Light";
+                break;
+            }
+            case DeviceType::BLINDS:{
+                $result = "Blinds";
                 break;
             }
         }

@@ -17,6 +17,10 @@
                     icon-turned-on
                 {% elseif(device['state'] == 4) %}
                     icon-turned-off
+                {% elseif(device['state'] == 5) %}
+                    icon-rolled-up
+                {% elseif(device['state'] == 6) %}
+                    icon-rolled-down
                 {% endif %}"></i>
             <i class="icon icon-status-working"></i>
 

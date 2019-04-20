@@ -12,7 +12,7 @@ namespace App\Service\DeviceManagement;
 use App\Model\Device\StateType;
 use Psr\Log\LoggerInterface;
 
-class Light implements DeviceChangeStateInterface
+class Blinds implements DeviceChangeStateInterface
 {
     /**
      * @var LoggerInterface
@@ -38,19 +38,23 @@ class Light implements DeviceChangeStateInterface
     public function changeState(int $state, array $pins, int $turns)
     {
         $outputState = null;
-        $command = "cd ../src/Scripts && python light.py " . implode(',', $pins);
-        $this->logger->info("Change light state in progress", ['state' => $state, 'pin' => $pins]);
+        $command = "cd ../src/Scripts && python motor.py " . implode(',', $pins);
+        $this->logger->info("Change motor state in progress", ['state' => $state, 'pins' => $pins, 'turns' => $turns]);
         switch ($state){
-            case StateType::LIGHT_TURNED_ON:{
+            case StateType::BLINDS_ROLLED_UP:{
                 $command = $command  . " 1";
                 $this->logger->info("run ", ['command' => $command]);
-                $outputState = exec($command);
+                for($i = 0; $turns <= $turns; $turns++){
+                    $outputState = exec($command);
+                }
                 break;
             }
-            case StateType::LIGHT_TURNED_OFF:{
+            case StateType::BLINDS_ROLLED_DOWN:{
                 $command = $command  . " 2";
                 $this->logger->info("run ", ['command' => $command]);
-                $outputState = exec($command);
+                for($i = 0; $turns <= $turns; $turns++){
+                    $outputState = exec($command);
+                }
                 break;
             }
             default:

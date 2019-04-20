@@ -27,35 +27,50 @@ class Device
     private $state;
 
     /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $stateValue;
-
-    /**
      * @ORM\Column(type="integer")
      */
     private $deviceType;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string")
      */
-    private $pin;
+    private $pins;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $turns;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $currentTurn;
 
     /**
      * @ORM\Column(type="boolean")
      */
     private $status;
 
-    public function getId(): ?int
+    /**
+     * @return int
+     */
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName(): ?string
+    /**
+     * @return string
+     */
+    public function getName(): string
     {
         return $this->name;
     }
 
+    /**
+     * @param string $name
+     * @return Device
+     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -63,11 +78,18 @@ class Device
         return $this;
     }
 
-    public function getState(): ?int
+    /**
+     * @return int
+     */
+    public function getState(): int
     {
         return $this->state;
     }
 
+    /**
+     * @param int $state
+     * @return Device
+     */
     public function setState(int $state): self
     {
         $this->state = $state;
@@ -75,23 +97,18 @@ class Device
         return $this;
     }
 
-    public function getStateValue(): ?float
-    {
-        return $this->stateValue;
-    }
-
-    public function setStateValue(?float $stateValue): self
-    {
-        $this->stateValue = $stateValue;
-
-        return $this;
-    }
-
-    public function getDeviceType(): ?int
+    /**
+     * @return int
+     */
+    public function getDeviceType(): int
     {
         return $this->deviceType;
     }
 
+    /**
+     * @param int $deviceType
+     * @return Device
+     */
     public function setDeviceType(int $deviceType): self
     {
         $this->deviceType = $deviceType;
@@ -99,27 +116,79 @@ class Device
         return $this;
     }
 
-    public function getPin(): ?int
+    /**
+     * @return string
+     */
+    public function getPins(): ?string
     {
-        return $this->pin;
+        return $this->pins;
     }
 
-    public function setPin(int $pin): self
+    /**
+     * @param array $pins
+     * @return Device
+     */
+    public function setPins(array $pins): self
     {
-        $this->pin = $pin;
+        $this->pins = implode(',', $pins);
 
         return $this;
     }
 
-    public function getStatus(): ?bool
+    /**
+     * @return bool
+     */
+    public function getStatus(): bool
     {
         return $this->status;
     }
 
+    /**
+     * @param bool $status
+     * @return Device
+     */
     public function setStatus(bool $status): self
     {
         $this->status = $status;
 
         return $this;
     }
+
+    /**
+     * @return int|null
+     */
+    public function getTurns(): ?int
+    {
+        return $this->turns;
+    }
+
+    /**
+     * @param int $turns
+     * @return Device
+     */
+    public function setTurns(?int $turns): Device
+    {
+        $this->turns = $turns;
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getCurrentTurn(): ?int
+    {
+        return $this->currentTurn;
+    }
+
+    /**
+     * @param int $currentTurn
+     * @return Device
+     */
+    public function setCurrentTurn(?int $currentTurn)
+    {
+        $this->currentTurn = $currentTurn;
+        return $this;
+    }
+
+
 }

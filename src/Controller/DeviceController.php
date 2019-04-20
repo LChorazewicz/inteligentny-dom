@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Device;
-use App\Form\DeviceType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,14 +14,22 @@ use Symfony\Component\Routing\Annotation\Route;
 class DeviceController extends AbstractController
 {
     /**
+     * @var \App\Model\Device\Device
+     */
+    private $deviceModel;
+
+    public function __construct(\App\Model\Device\Device $deviceModel)
+    {
+        $this->deviceModel = $deviceModel;
+    }
+    /**
      * @Route("/", name="device_index", methods={"GET"})
-     * @param \App\Model\Device\Device $deviceModel
      * @return Response
      */
-    public function index(\App\Model\Device\Device $deviceModel): Response
+    public function index(): Response
     {
         return $this->render('device/index.html.twig', [
-            'devices' => $deviceModel->findAllDevicesDto(),
+            'devices' => $this->deviceModel->findAllDevicesDto(),
         ]);
     }
 
@@ -30,32 +37,25 @@ class DeviceController extends AbstractController
      * @Route("/new", name="device_new", methods={"GET","POST"})
      * @param Request $request
      * @return Response
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function new(Request $request): Response
     {
-        $device = new Device();
-
         if($request->isMethod(Request::METHOD_POST)){
+            $device = new Device();
             $device->setStatus(true);
-            $device->setDeviceType(1);
-            $device->setName("");
-            $device->setStateValue(null);
+            $device->setDeviceType($request->request->getInt("type", null));
+            $device->setName($request->request->get("name", null));
+            $device->setState($request->request->getInt("state", null));
+            $device->setTurns($request->request->getInt("number-of-turns", null));
+            $pins = $request->request->get("pins", []);
+            $device->setPins(explode(',', $pins));
+            $this->deviceModel->addDevice($device);
             return $this->redirectToRoute('device_index');
         }
-//        $form = $this->createForm(DeviceType::class, $device);
-//        $form->handleRequest($request);
 
-//        if ($form->isSubmitted() && $form->isValid()) {
-//            $entityManager = $this->getDoctrine()->getManager();
-//            $entityManager->persist($device);
-//            $entityManager->flush();
-
-//            return $this->redirectToRoute('device_index');
-//        }
-
-        return $this->render('device/new.html.twig', [
-            'device' => $device
-        ]);
+        return $this->render('device/new.html.twig');
     }
 
     /**
@@ -74,25 +74,34 @@ class DeviceController extends AbstractController
     /**
      * @Route("/{id}/edit", name="device_edit", methods={"GET","POST"})
      * @param Request $request
-     * @param Device $device
+     * @param $id
      * @return Response
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function edit(Request $request, Device $device): Response
+    public function edit(Request $request, int $id): Response
     {
-        $form = $this->createForm(DeviceType::class, $device);
-        $form->handleRequest($request);
+        $deviceToEdit = $this->deviceModel->getDevice($id);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+        if ($request->isMethod(Request::METHOD_POST)) {
+            if(!empty($deviceToEdit)){
+                $deviceToEdit->setDeviceType($request->request->getInt("type", $deviceToEdit->getDeviceType()));
+                $deviceToEdit->setStatus($request->request->getBoolean('status', $deviceToEdit->getStatus()));
+                $deviceToEdit->setName($request->request->get("name", $deviceToEdit->getName()));
+                $deviceToEdit->setState($request->request->getInt("state", $deviceToEdit->getState()));
+                $deviceToEdit->setTurns($request->request->getInt("number-of-turns", $deviceToEdit->getTurns()));
+                $pins = $request->request->get("pins", $deviceToEdit->getPins());
+                $deviceToEdit->setPins(explode(',', $pins));
+                $this->deviceModel->addDevice($deviceToEdit);
+            }
 
             return $this->redirectToRoute('device_index', [
-                'id' => $device->getId(),
+                'id' => $id,
             ]);
         }
 
         return $this->render('device/edit.html.twig', [
-            'device' => $device,
-            'form' => $form->createView(),
+            'device' => $deviceToEdit,
         ]);
     }
 

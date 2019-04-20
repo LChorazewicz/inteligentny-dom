@@ -73,3 +73,15 @@ i.icon{
     width: 40px;
     height: 40px;
 }
+
+.icon-rolled-up{
+    background-image: url("../img/rolled-up.svg");
+    width: 40px;
+    height: 40px;
+}
+
+.icon-rolled-down{
+    background-image: url("../img/rolled-down.svg");
+    width: 40px;
+    height: 40px;
+}

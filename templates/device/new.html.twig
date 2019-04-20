@@ -12,26 +12,29 @@
         <label for="type">Device type</label>
         <select name="type" id="type" onchange="operation(this)">
             <option value="none" disabled selected>-- select --</option>
-            <option value="door">Door</option>
-            <option value="blinds" >Blinds</option>
-            <option value="light">Light</option>
+            <option value="1">Door</option>
+            <option value="4" >Blinds</option>
+            <option value="3">Light</option>
         </select><br>
+
+        <br><label for="pins">Device used pins (write after comma)</label>
+        <input type="text" name="pins" id="pins"><br>
 
         <div id="box-state" style="display: none;">
             <label for="state">Default state</label>
             <select name="state" id="state" onchange="operation(this)">
                 <option value="none" disabled selected>-- select --</option>
                 <optgroup id="door-group" label="Door" style="display: none;">
-                    <option value="locked">Locked</option>
-                    <option value="unlocked">Unlocked</option>
+                    <option value="1">Locked</option>
+                    <option value="2">Unlocked</option>
                 </optgroup>
                 <optgroup id="light-group" label="Light" style="display: none;">
-                    <option value="turned-on">Turned on</option>
-                    <option value="turned-off">Turned off</option>
+                    <option value="3">Turned on</option>
+                    <option value="4">Turned off</option>
                 </optgroup>
                 <optgroup id="blinds-group" label="Blinds" style="display: none;">
-                    <option value="rolled-up">Rolled up</option>
-                    <option value="rolled-down">Rolled down</option>
+                    <option value="5">Rolled up</option>
+                    <option value="6">Rolled down</option>
                 </optgroup>
             </select><br><br>
         </div>
@@ -53,8 +56,9 @@
         function operation(context) {
             switch (context.id) {
                 case "type": {
-                    switch (context.value) {
-                        case "blinds":{
+                    $('#state option:eq(0)').prop('selected', true);
+                    switch (parseInt(context.value)) {
+                        case 4:{
                             $("#box-state").show();
 
                             $("#blinds-group").show();
@@ -64,7 +68,7 @@
 
                             break;
                         }
-                        case "door":{
+                        case 1:{
                             $("#box-state").show();
 
                             $("#door-group").show();
@@ -75,7 +79,7 @@
 
                             break;
                         }
-                        case "light":{
+                        case 3:{
                             $("#box-state").show();
 
                             $("#light-group").show();
@@ -90,8 +94,8 @@
                     break;
                 }
                 case "state": {
-                    switch (context.value) {
-                        case "rolled-up":{
+                    switch (parseInt(context.value)) {
+                        case 5:{
                             let element = $("#box-number-of-turns"),
                                 span = element.find("label").find("span")[0];
 
@@ -99,7 +103,7 @@
                             element.show();
                             break;
                         }
-                        case "rolled-down": {
+                        case 6: {
                             let element = $("#box-number-of-turns"),
                                 span = element.find("label").find("span")[0];
 

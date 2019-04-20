@@ -39,18 +39,14 @@ class ChangeState
         switch ($device->getDeviceType()){
             case DeviceType::DOOR:{
                 switch ($device->getState()){
-                    case StateType::UNLOCKED_DOOR:{
-                        if($device->getState() == StateType::UNLOCKED_DOOR){
-                            $device->setState(StateType::LOCKED_DOOR);
-                            $this->deviceModel->updateState($device);
-                        }
+                    case StateType::DOOR_UNLOCKED:{
+                        $device->setState(StateType::DOOR_LOCKED);
+                        $this->deviceModel->updateState($device);
                         break;
                     }
-                    case StateType::LOCKED_DOOR:{
-                        if($device->getState() == StateType::LOCKED_DOOR){
-                            $device->setState(StateType::UNLOCKED_DOOR);
-                            $this->deviceModel->updateState($device);
-                        }
+                    case StateType::DOOR_LOCKED:{
+                        $device->setState(StateType::DOOR_UNLOCKED);
+                        $this->deviceModel->updateState($device);
                         break;
                     }
                 }
@@ -58,19 +54,29 @@ class ChangeState
             }
             case DeviceType::LIGHT:{
                 switch ($device->getState()){
-                    case StateType::TURNED_ON_LIGHT:{
-                        if($device->getState() == StateType::TURNED_ON_LIGHT){
-                            $device->setState(StateType::TURNED_OFF_LIGHT);
-                            $this->deviceModel->updateState($device);
-                        }
+                    case StateType::LIGHT_TURNED_ON:{
+                        $device->setState(StateType::LIGHT_TURNED_OFF);
+                        $this->deviceModel->updateState($device);
                         break;
                     }
-                    case StateType::TURNED_OFF_LIGHT:{
-
-                        if($device->getState() == StateType::TURNED_OFF_LIGHT){
-                            $device->setState(StateType::TURNED_ON_LIGHT);
-                            $this->deviceModel->updateState($device);
-                        }
+                    case StateType::LIGHT_TURNED_OFF:{
+                        $device->setState(StateType::LIGHT_TURNED_ON);
+                        $this->deviceModel->updateState($device);
+                        break;
+                    }
+                }
+                break;
+            }
+            case DeviceType::BLINDS:{
+                switch ($device->getState()){
+                    case StateType::BLINDS_ROLLED_UP:{
+                        $device->setState(StateType::BLINDS_ROLLED_DOWN);
+                        $this->deviceModel->updateState($device);
+                        break;
+                    }
+                    case StateType::BLINDS_ROLLED_DOWN:{
+                        $device->setState(StateType::BLINDS_ROLLED_UP);
+                        $this->deviceModel->updateState($device);
                         break;
                     }
                 }

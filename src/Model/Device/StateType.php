@@ -11,8 +11,40 @@ namespace App\Model\Device;
 
 class StateType
 {
-    const LOCKED_DOOR = 1;
-    const UNLOCKED_DOOR = 2;
-    const TURNED_ON_LIGHT = 3;
-    const TURNED_OFF_LIGHT = 4;
+    const DOOR_LOCKED = 1;
+    const DOOR_UNLOCKED = 2;
+    const LIGHT_TURNED_ON = 3;
+    const LIGHT_TURNED_OFF = 4;
+    const BLINDS_ROLLED_UP = 5;
+    const BLINDS_ROLLED_DOWN = 6;
+
+    /**
+     * @return array
+     */
+    public static function getDoorStates(): array
+    {
+        return [
+            self::DOOR_LOCKED, self::DOOR_UNLOCKED
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public static function getLightStates(): array
+    {
+        return [
+            self::LIGHT_TURNED_ON, self::LIGHT_TURNED_OFF
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public static function getBlindsStates(): array
+    {
+        return [
+            self::BLINDS_ROLLED_UP, self::BLINDS_ROLLED_DOWN
+        ];
+    }
 }
