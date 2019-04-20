@@ -44,7 +44,7 @@ class Blinds implements DeviceChangeStateInterface
             case StateType::BLINDS_ROLLED_UP:{
                 $command = $command  . " 2";
                 $this->logger->info("run ", ['command' => $command]);
-                for($i = 0; $i <= $turns; $i++){
+                for($i = 0; $i <= $turns - 1; $i++){
                     $outputState = exec($command);
                 }
                 break;
@@ -52,7 +52,7 @@ class Blinds implements DeviceChangeStateInterface
             case StateType::BLINDS_ROLLED_DOWN:{
                 $command = $command  . " 1";
                 $this->logger->info("run ", ['command' => $command]);
-                for($i = 0; $i <= $turns; $i++){
+                for($i = 0; $i <= $turns - 1; $i++){
                     $outputState = exec($command);
                 }
                 break;
