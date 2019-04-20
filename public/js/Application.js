@@ -31,6 +31,16 @@ class Application {
                         icon.removeClass('icon-turned-on').addClass('icon-turned-off');
                         break;
                     }
+                    case 5:{//rolled-up
+                        let icon = $('#device-' + deviceId + " .state-icon");
+                        icon.removeClass('icon-rolled-down').addClass('icon-rolled-up');
+                        break;
+                    }
+                    case 6:{//rolled-down
+                        let icon = $('#device-' + deviceId + " .state-icon");
+                        icon.removeClass('icon-rolled-up').addClass('icon-rolled-down');
+                        break;
+                    }
                 }
 
             }
