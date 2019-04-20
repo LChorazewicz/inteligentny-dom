@@ -30,7 +30,7 @@ def main(args):
         [0,1,0,0],
         [1,1,0,0],
         [1,0,0,0]]
-
+    turnsPerOneCicle = 255
     ControlPin = [0,0,0,0];
     if len(args) == 1:
           print "empty parameter list, using: motor.py <pin1> <pin2> <pin3> <pin4> <state 1 = rolled up, 2 = rolled down>"
@@ -55,7 +55,7 @@ def main(args):
                 GPIO.output(pin, 0)
 
             if state == 2:
-                for i in range(512):
+                for i in range(turnsPerOneCicle):
                     for halfstep in range(8):
                         for pin in range(4):
                             GPIO.output(ControlPin[pin], seqBackward[halfstep][pin])
@@ -63,7 +63,7 @@ def main(args):
                 GPIO.cleanup()
 
             if state == 1:
-                for i in range(512):
+                for i in range(turnsPerOneCicle):
                     for halfstep in range(8):
                         for pin in range(4):
                             GPIO.output(ControlPin[pin], seqForward[halfstep][pin])
