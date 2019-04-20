@@ -4,25 +4,7 @@ import sys, getopt, time, os
 import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(True)
-
-seqForward = [ [1,0,0,0],
-        [1,1,0,0],
-        [0,1,0,0],
-        [0,1,1,0],
-        [0,0,1,0],
-        [0,0,1,1],
-        [0,0,0,1],
-        [1,0,0,1]]
-
-seqBackward = [ [1,0,0,1],
-        [0,0,0,1],
-        [0,0,1,1],
-        [0,0,1,0],
-        [0,1,1,0],
-        [0,1,0,0],
-        [1,1,0,0],
-        [1,0,0,0]]
+GPIO.setwarnings(False)
 
 def main(args):
     pin1 = -1
@@ -31,6 +13,25 @@ def main(args):
     pin4 = -1
     state = -1
 
+    seqForward = [ [1,0,0,0],
+        [1,1,0,0],
+        [0,1,0,0],
+        [0,1,1,0],
+        [0,0,1,0],
+        [0,0,1,1],
+        [0,0,0,1],
+        [1,0,0,1]]
+
+    seqBackward = [ [1,0,0,1],
+        [0,0,0,1],
+        [0,0,1,1],
+        [0,0,1,0],
+        [0,1,1,0],
+        [0,1,0,0],
+        [1,1,0,0],
+        [1,0,0,0]]
+
+    ControlPin = [0,0,0,0];
     if len(args) == 1:
           print "empty parameter list, using: motor.py <pin1> <pin2> <pin3> <pin4> <state 1 = rolled up, 2 = rolled down>"
     else:
@@ -46,6 +47,8 @@ def main(args):
         if int(args[4]):
             pin4 = int(args[4])
             ControlPin[3] = pin4
+        if int(args[5]):
+            state = int(args[5])
         if pin1 >= 0 and pin2 >= 0 and pin3 >= 0 and pin4 >= 0 and (state == 1 or state == 2):
             for pin in ControlPin:
                 GPIO.setup(pin, GPIO.OUT)
