@@ -12,7 +12,7 @@ namespace App\Service\DeviceManagement;
 use App\Model\Device\StateType;
 use Psr\Log\LoggerInterface;
 
-class Door
+class Door implements DeviceChangeStateInterface
 {
     /**
      * @var LoggerInterface
@@ -30,15 +30,16 @@ class Door
 
     /**
      * @param int $state
-     * @param int $pin
+     * @param array $pins
+     * @param int $turns
      * @return string|null
      * @throws \Exception
      */
-    public function changeState(int $state, int $pin)
+    public function changeState(int $state, array $pins, int $turns)
     {
         $outputState = null;
-        $command = "cd ../src/Scripts && python door.py " . $pin;
-        $this->logger->info("Change door state in progress", ['state' => $state, 'pin' => $pin]);
+        $command = "cd ../src/Scripts && python door.py " . implode(',', $pins);
+        $this->logger->info("Change door state in progress", ['state' => $state, 'pin' => $pins]);
         switch ($state){
             case StateType::DOOR_UNLOCKED:{
                 $command = $command  . " 1";

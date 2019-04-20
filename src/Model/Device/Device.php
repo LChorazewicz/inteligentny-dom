@@ -129,7 +129,7 @@ class Device
             }
         }
 
-        $result = $device->changeState($deviceEntity->getState(), $deviceEntity->getPins());
+        $result = $device->changeState($deviceEntity->getState(), explode(', ', $deviceEntity->getPins()), $deviceEntity->getTurns());
 
         if($result == 1){
             $this->deviceRepository->update($deviceEntity);
