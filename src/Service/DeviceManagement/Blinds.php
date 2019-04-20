@@ -38,7 +38,7 @@ class Blinds implements DeviceChangeStateInterface
     public function changeState(int $state, array $pins, int $turns)
     {
         $outputState = null;
-        $command = "cd ../src/Scripts && python motor.py " . implode(',', $pins);
+        $command = "cd ../src/Scripts && python motor.py " . implode(' ', $pins);
         $this->logger->info("Change motor state in progress", ['state' => $state, 'pins' => $pins, 'turns' => $turns]);
         switch ($state){
             case StateType::BLINDS_ROLLED_UP:{
