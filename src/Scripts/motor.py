@@ -30,7 +30,7 @@ def main(args):
         [0,1,0,0],
         [1,1,0,0],
         [1,0,0,0]]
-    turnsPerOneCicle = 255
+    turnsPerOneCicle = 256
     ControlPin = [0,0,0,0];
     if len(args) == 1:
           print "empty parameter list, using: motor.py <pin1> <pin2> <pin3> <pin4> <state 1 = rolled up, 2 = rolled down>"
