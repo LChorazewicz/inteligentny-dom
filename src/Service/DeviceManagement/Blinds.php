@@ -42,7 +42,7 @@ class Blinds implements DeviceChangeStateInterface
         $this->logger->info("Change motor state in progress", ['state' => $state, 'pins' => $pins, 'turns' => $turns]);
         switch ($state){
             case StateType::BLINDS_ROLLED_UP:{
-                $command = $command  . " 1";
+                $command = $command  . " 2";
                 $this->logger->info("run ", ['command' => $command]);
                 for($i = 0; $i <= $turns; $i++){
                     $outputState = exec($command);
@@ -50,7 +50,7 @@ class Blinds implements DeviceChangeStateInterface
                 break;
             }
             case StateType::BLINDS_ROLLED_DOWN:{
-                $command = $command  . " 2";
+                $command = $command  . " 1";
                 $this->logger->info("run ", ['command' => $command]);
                 for($i = 0; $i <= $turns; $i++){
                     $outputState = exec($command);
