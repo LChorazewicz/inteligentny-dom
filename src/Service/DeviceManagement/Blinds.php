@@ -87,7 +87,7 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
                 break;
             }
             case StateType::BLINDS_ROLLED_DOWN:{
-                $command = $command  . " 2" . $engineStepsPerCicle;
+                $command = $command  . " 2 " . $engineStepsPerCicle;
                 $this->logger->info("run ", ['command' => $command]);
                 for($i = 0; $i <= $turns - 1; $i++){
                     $outputState = exec($command);
