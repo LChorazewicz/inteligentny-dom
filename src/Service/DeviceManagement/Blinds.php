@@ -73,12 +73,15 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
         $state = $this->device->getState();
         $command = "cd ../src/Scripts && python motor.py " . $pins;
         $this->logger->info("Change motor state in progress", ['state' => $state, 'pins' => $pins, 'turns' => $turns]);
+        $deviceTurns = ($this->device->getTurns() != null) ? $this->device->getTurns() : 0;
+
         switch ($state){
             case StateType::BLINDS_ROLLED_UP:{
                 $command = $command  . " 1";
                 $this->logger->info("run ", ['command' => $command]);
                 for($i = 0; $i <= $turns - 1; $i++){
                     $outputState = exec($command);
+                    $this->device->setCurrentTurn($deviceTurns - 1);
                 }
                 $this->device->setState(StateType::BLINDS_ROLLED_DOWN);
                 break;
@@ -88,6 +91,7 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
                 $this->logger->info("run ", ['command' => $command]);
                 for($i = 0; $i <= $turns - 1; $i++){
                     $outputState = exec($command);
+                    $this->device->setCurrentTurn($deviceTurns + 1);
                 }
                 $this->device->setState(StateType::BLINDS_ROLLED_UP);
                 break;
