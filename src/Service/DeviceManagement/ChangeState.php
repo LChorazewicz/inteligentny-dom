@@ -77,9 +77,6 @@ class ChangeState
                 break;
             }
         }
-        if(!is_null($result)){
-            $this->deviceRepository->update($device);
-        }
     }
 
     /**

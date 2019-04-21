@@ -80,6 +80,7 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
                 for($i = 0; $i <= $turns - 1; $i++){
                     $outputState = exec($command);
                 }
+                $this->device->setState(StateType::BLINDS_ROLLED_DOWN);
                 break;
             }
             case StateType::BLINDS_ROLLED_DOWN:{
@@ -88,6 +89,7 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
                 for($i = 0; $i <= $turns - 1; $i++){
                     $outputState = exec($command);
                 }
+                $this->device->setState(StateType::BLINDS_ROLLED_UP);
                 break;
             }
             default:

@@ -59,12 +59,16 @@ class Door extends DeviceAbstract implements DeviceChangeStateInterface
                 $command = $command  . " 2";
                 $this->logger->info("run ", ['command' => $command]);
                 $outputState = exec($command);
+                $this->device->setState(StateType::DOOR_LOCKED);
+
                 break;
             }
             case StateType::DOOR_LOCKED:{
                 $command = $command  . " 1";
                 $this->logger->info("run ", ['command' => $command]);
                 $outputState = exec($command);
+                $this->device->setState(StateType::DOOR_UNLOCKED);
+
                 break;
             }
             default:

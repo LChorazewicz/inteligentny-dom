@@ -59,12 +59,14 @@ class Light extends DeviceAbstract implements DeviceChangeStateInterface
                 $command = $command  . " 2";
                 $this->logger->info("run ", ['command' => $command]);
                 $outputState = exec($command);
+                $this->device->setState(StateType::LIGHT_TURNED_OFF);
                 break;
             }
             case StateType::LIGHT_TURNED_OFF:{
                 $command = $command  . " 1";
                 $this->logger->info("run ", ['command' => $command]);
                 $outputState = exec($command);
+                $this->device->setState(StateType::LIGHT_TURNED_ON);
                 break;
             }
             default:
