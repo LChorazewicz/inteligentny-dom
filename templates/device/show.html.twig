@@ -39,15 +39,17 @@
                 <th>status</th>
                 <td>{{ device.status ? 'Acrive' : 'Inactive' }}</td>
             </tr>
-            <tr>
-                <th>correct the rotation of the engine</th>
-                <td>
-                    <a href="#" onclick="let application = new Application();
-                            application.correctState({{ device.deviceId }}, 'UP')">UP</a> |
-                    <a href="#" onclick="let application = new Application();
-                            application.correctState({{ device.deviceId }}, 'DOWN')">DOWN</a>
-                </td>
-            </tr>
+            {% if device.deviceType == 4 %}
+                <tr>
+                    <th>correct the rotation of the engine</th>
+                    <td>
+                        <a href="#" onclick="let application = new Application();
+                                application.correctState({{ device.deviceId }}, 'UP')">UP</a> |
+                        <a href="#" onclick="let application = new Application();
+                                application.correctState({{ device.deviceId }}, 'DOWN')">DOWN</a>
+                    </td>
+                </tr>
+            {% endif %}
         </tbody>
     </table>
 

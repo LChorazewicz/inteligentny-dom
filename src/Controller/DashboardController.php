@@ -70,7 +70,7 @@ class DashboardController extends AbstractController
         if($request->isMethod(Request::METHOD_POST)){
             $device = $this->deviceModel->getDevice($deviceId);
             if(!empty($device)){
-                $this->changeState->correct($device, $rotation);
+                $this->changeState->correctState($device, $rotation);
             }
         }
 

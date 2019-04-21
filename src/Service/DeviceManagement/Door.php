@@ -9,10 +9,12 @@
 namespace App\Service\DeviceManagement;
 
 
+use App\Entity\Device;
 use App\Model\Device\StateType;
+use App\Repository\DeviceRepository;
 use Psr\Log\LoggerInterface;
 
-class Door implements DeviceChangeStateInterface
+class Door extends DeviceAbstract implements DeviceChangeStateInterface
 {
     /**
      * @var LoggerInterface
@@ -20,35 +22,47 @@ class Door implements DeviceChangeStateInterface
     private $logger;
 
     /**
-     * Door constructor.
-     * @param LoggerInterface $logger
+     * @var Device
      */
-    public function __construct(LoggerInterface $logger)
+    private $device;
+
+    /**
+     * @var DeviceRepository
+     */
+    private $deviceRepository;
+
+    /**
+     * Door constructor.
+     * @param Device $device
+     * @param LoggerInterface $logger
+     * @param DeviceRepository $deviceRepository
+     */
+    public function __construct(Device $device, LoggerInterface $logger, DeviceRepository $deviceRepository)
     {
         $this->logger = $logger;
+        $this->device = $device;
+        $this->deviceRepository = $deviceRepository;
     }
 
     /**
-     * @param int $state
-     * @param array $pins
-     * @param int $turns
-     * @return string|null
      * @throws \Exception
      */
-    public function changeState(int $state, array $pins, int $turns)
+    public function changeState(): void
     {
         $outputState = null;
-        $command = "cd ../src/Scripts && python door.py " . implode(',', $pins);
+        $pins = $this->getPinsForPythonScript($this->device->getPins());
+        $state = $this->device->getState();
+        $command = "cd ../src/Scripts && python door.py " . $pins;
         $this->logger->info("Change door state in progress", ['state' => $state, 'pin' => $pins]);
         switch ($state){
             case StateType::DOOR_UNLOCKED:{
-                $command = $command  . " 1";
+                $command = $command  . " 2";
                 $this->logger->info("run ", ['command' => $command]);
                 $outputState = exec($command);
                 break;
             }
             case StateType::DOOR_LOCKED:{
-                $command = $command  . " 2";
+                $command = $command  . " 1";
                 $this->logger->info("run ", ['command' => $command]);
                 $outputState = exec($command);
                 break;
@@ -59,7 +73,9 @@ class Door implements DeviceChangeStateInterface
 
         $this->logger->info('response status', ['output' => $outputState]);
 
-        return $outputState;
+        if($outputState == 1){
+            $this->deviceRepository->update($this->device);
+        }
     }
 
 }
