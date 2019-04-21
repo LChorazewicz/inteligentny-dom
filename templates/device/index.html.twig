@@ -3,17 +3,16 @@
 {% block title %}Device index{% endblock %}
 
 {% block body %}
-    <h1>Device index</h1>
-
     <table class="table">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Name</th>
                 <th>state</th>
-                <th>stateValue</th>
                 <th>deviceType</th>
-                <th>pin</th>
+                <th>pins</th>
+                <th>Turns to open/close</th>
+                <th>Current turn</th>
                 <th>status</th>
                 <th>actions</th>
             </tr>
@@ -21,16 +20,17 @@
         <tbody>
         {% for device in devices %}
             <tr>
-                <td>{{ device.id }}</td>
-                <td>{{ device.name }}</td>
-                <td>{{ device.state }}</td>
-                <td>{{ device.stateValue }}</td>
-                <td>{{ device.deviceType }}</td>
-                <td>{{ device.pin }}</td>
-                <td>{{ device.status ? 'Yes' : 'No' }}</td>
+                <td>{{ device.deviceId }}</td>
+                <td>{{ device.deviceName }}</td>
+                <td>{{ device.stateName }}</td>
+                <td>{{ device.deviceTypeName }}</td>
+                <td>{{ device.pins|default('None') }}</td>
+                <td>{{ device.turns|default('None') }}</td>
+                <td>{{ device.currentTurn|default('None') }}</td>
+                <td>{{ device.status ? 'Active' : 'Inactive' }}</td>
                 <td>
-                    <a href="{{ path('device_show', {'id': device.id}) }}">show</a>
-                    <a href="{{ path('device_edit', {'id': device.id}) }}">edit</a>
+                    <a href="{{ path('device_show', {'id': device.deviceId}) }}">show</a>
+                    <a href="{{ path('device_edit', {'id': device.deviceId}) }}">edit</a>
                 </td>
             </tr>
         {% else %}

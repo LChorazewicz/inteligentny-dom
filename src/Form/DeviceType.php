@@ -19,13 +19,20 @@ class DeviceType extends AbstractType
     {
         $builder
             ->add('name', TextType::class)
-            ->add('state', ChoiceType::class, ['choices' => [StateType::LOCKED, StateType::UNLOCKED]])
-            ->add('stateValue', IntegerType::class, ['required' => false])
             ->add('deviceType', ChoiceType::class, ['choices' => [
-                \App\Model\Device\DeviceType::DOOR,
-                \App\Model\Device\DeviceType::ENGINE]
-            ])
-            ->add('pin', NumberType::class)
+                'Door' => \App\Model\Device\DeviceType::DOOR,
+                'Engine' => \App\Model\Device\DeviceType::ENGINE,
+                'Light' => \App\Model\Device\DeviceType::LIGHT
+            ]])
+            ->add('state', ChoiceType::class, ['choices' => [
+                'Locked' => StateType::DOOR_LOCKED,
+                'Unlocked' => StateType::DOOR_UNLOCKED,
+                'Turned on' => StateType::LIGHT_TURNED_ON,
+                'Turned off' => StateType::LIGHT_TURNED_OFF,
+            ]])
+            ->add('stateValue', IntegerType::class, ['required' => false])
+
+            ->add('pins', NumberType::class)
             ->add('status', ChoiceType::class, ['choices' => [
                 StatusType::ACTIVE => 'active',
                 StatusType::INACTIVE => 'inactive',

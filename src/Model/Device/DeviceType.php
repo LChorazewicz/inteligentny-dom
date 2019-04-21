@@ -13,4 +13,6 @@ class DeviceType
 {
     const DOOR = 1;
     const ENGINE = 2;
+    const LIGHT = 3;
+    const BLINDS = 4;
 }

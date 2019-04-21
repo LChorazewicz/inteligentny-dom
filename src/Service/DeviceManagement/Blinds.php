@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: leszek
- * Date: 16.03.19
- * Time: 13:09
+ * Date: 31.03.19
+ * Time: 22:52
  */
 
 namespace App\Service\DeviceManagement;
@@ -12,7 +12,7 @@ namespace App\Service\DeviceManagement;
 use App\Model\Device\StateType;
 use Psr\Log\LoggerInterface;
 
-class Door implements DeviceChangeStateInterface
+class Blinds implements DeviceChangeStateInterface
 {
     /**
      * @var LoggerInterface
@@ -20,7 +20,7 @@ class Door implements DeviceChangeStateInterface
     private $logger;
 
     /**
-     * Door constructor.
+     * Light constructor.
      * @param LoggerInterface $logger
      */
     public function __construct(LoggerInterface $logger)
@@ -38,19 +38,23 @@ class Door implements DeviceChangeStateInterface
     public function changeState(int $state, array $pins, int $turns)
     {
         $outputState = null;
-        $command = "cd ../src/Scripts && python door.py " . implode(',', $pins);
-        $this->logger->info("Change door state in progress", ['state' => $state, 'pin' => $pins]);
+        $command = "cd ../src/Scripts && python motor.py " . implode(' ', $pins);
+        $this->logger->info("Change motor state in progress", ['state' => $state, 'pins' => $pins, 'turns' => $turns]);
         switch ($state){
-            case StateType::DOOR_UNLOCKED:{
-                $command = $command  . " 1";
-                $this->logger->info("run ", ['command' => $command]);
-                $outputState = exec($command);
-                break;
-            }
-            case StateType::DOOR_LOCKED:{
+            case StateType::BLINDS_ROLLED_UP:{
                 $command = $command  . " 2";
                 $this->logger->info("run ", ['command' => $command]);
-                $outputState = exec($command);
+                for($i = 0; $i <= $turns - 1; $i++){
+                    $outputState = exec($command);
+                }
+                break;
+            }
+            case StateType::BLINDS_ROLLED_DOWN:{
+                $command = $command  . " 1";
+                $this->logger->info("run ", ['command' => $command]);
+                for($i = 0; $i <= $turns - 1; $i++){
+                    $outputState = exec($command);
+                }
                 break;
             }
             default:
@@ -61,5 +65,4 @@ class Door implements DeviceChangeStateInterface
 
         return $outputState;
     }
-
 }

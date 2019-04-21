@@ -5,9 +5,144 @@
 {% block body %}
     <h1>Edit device</h1>
 
-    {{ include('device/_form.html.twig', {'button_label': 'Update'}) }}
+    <form action="{{ path('device_edit', {'id': device.id}) }}" method="post">
+        <br><label for="name">Device name</label>
+        <input type="text" name="name" id="name" value="{{ device.name }}"><br>
+
+        <label for="type">Device type</label>
+        <select name="type" id="type" onchange="operation(this)">
+            <option value="none" disabled selected>-- select --</option>
+            <option value="1">Door</option>
+            <option value="4" >Blinds</option>
+            <option value="3">Light</option>
+        </select><br>
+
+        <br><label for="pins">Device used pins (write after comma)</label>
+        <input type="text" name="pins" id="pins" value="{{ device.pins }}"><br>
+
+        <div id="box-state" style="display: none;">
+            <label for="state">Default state</label>
+            <select name="state" id="state" onchange="operation(this)">
+                <option value="none" disabled selected>-- select --</option>
+                <optgroup id="door-group" label="Door" style="display: none;">
+                    <option value="1">Locked</option>
+                    <option value="2">Unlocked</option>
+                </optgroup>
+                <optgroup id="light-group" label="Light" style="display: none;">
+                    <option value="3">Turned on</option>
+                    <option value="4">Turned off</option>
+                </optgroup>
+                <optgroup id="blinds-group" label="Blinds" style="display: none;">
+                    <option value="5">Rolled up</option>
+                    <option value="6">Rolled down</option>
+                </optgroup>
+            </select><br><br>
+        </div>
+
+
+        <div id="box-number-of-turns" style="display: none;">
+            <label for="number-of-turns">Number of engine turns to <span></span></label>
+            <input type="number" name="number-of-turns" id="number-of-turns"><br>
+        </div><br>
+        <button>edit</button>
+    </form><br>
 
     <a href="{{ path('device_index') }}">back to list</a>
 
-    {{ include('device/_delete_form.html.twig') }}
+    <form method="post" action="{{ path('device_delete', {'id': device.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+        <input type="hidden" name="_method" value="DELETE">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ device.id) }}">
+        <button class="btn">Delete</button>
+    </form>
+
+{% endblock %}
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+            operation({
+                id: "type",
+                value: {{ device.deviceType }}
+            });
+            operation({
+                id: "state",
+                value: {{ device.state}}
+            });
+
+            $('#type option[value="{{ device.deviceType }}"]').attr('selected', 'selected');
+            $('#state option[value="{{ device.state }}"]').attr('selected', 'selected');
+            let turns = {{ device.turns }};
+            if(turns != null){
+                $('#number-of-turns').val(turns);
+            }
+        });
+    </script>
+    <script>
+        function operation(context) {
+            switch (context.id) {
+                case "type": {
+                    $('#state option:eq(0)').prop('selected', true);
+                    switch (parseInt(context.value)) {
+                        case 4:{
+                            $("#box-state").show();
+
+                            $("#blinds-group").show();
+
+                            $("#light-group").hide();
+                            $("#door-group").hide();
+
+                            break;
+                        }
+                        case 1:{
+                            $("#box-state").show();
+
+                            $("#door-group").show();
+
+                            $("#blinds-group").hide();
+                            $("#light-group").hide();
+                            $("#box-number-of-turns").hide();
+
+                            break;
+                        }
+                        case 3:{
+                            $("#box-state").show();
+
+                            $("#light-group").show();
+
+                            $("#blinds-group").hide();
+                            $("#door-group").hide();
+                            $("#box-number-of-turns").hide();
+
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case "state": {
+                    switch (parseInt(context.value)) {
+                        case 5:{
+                            let element = $("#box-number-of-turns"),
+                                span = element.find("label").find("span")[0];
+
+                            span.innerHTML = "roll down";
+                            element.show();
+                            break;
+                        }
+                        case 6: {
+                            let element = $("#box-number-of-turns"),
+                                span = element.find("label").find("span")[0];
+
+                            span.innerHTML = "roll up";
+                            element.show();
+                            break;
+                        }
+                        default: {
+                            $("#box-number-of-turns").hide();
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    </script>
 {% endblock %}

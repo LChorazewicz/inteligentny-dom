@@ -2,8 +2,9 @@
 
 namespace App\Controller;
 
-use App\Model\Device\StateType;
+use App\Service\DeviceManagement\ChangeState;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -14,9 +15,15 @@ class DashboardController extends AbstractController
      */
     private $deviceModel;
 
-    public function __construct(\App\Model\Device\Device $device)
+    /**
+     * @var ChangeState
+     */
+    private $changeState;
+
+    public function __construct(\App\Model\Device\Device $device, ChangeState $changeState)
     {
         $this->deviceModel = $device;
+        $this->changeState = $changeState;
     }
     /**
      * @Route("/", name="home")
@@ -25,7 +32,7 @@ class DashboardController extends AbstractController
     public function index()
     {
         return $this->render('dashboard/index.html.twig', [
-            'devices' => $this->deviceModel->getAllDoorDevicesDto(),
+            'devices' => $this->deviceModel->findAllDevicesDto(),
         ]);
     }
 
@@ -35,49 +42,38 @@ class DashboardController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function changedoorstate(Request $request)
+    public function changestate(Request $request)
     {
+        $deviceId = $request->request->get('deviceId', null);
+
         if($request->isMethod(Request::METHOD_POST)){
-            $params = $request->request->all();
-            foreach ($params as $device => $newValue){
-                $device = $this->deviceModel->getDevice($device);
-                switch ($newValue){
-                    case StateType::UNLOCKED:{
-                        if($device->getState() == StateType::LOCKED){
-                            $device->setState(StateType::UNLOCKED);
-                            $this->deviceModel->updateState($device);
-                        }
-                        break;
-                    }
-                    case StateType::LOCKED:{
-                        if($device->getState() == StateType::UNLOCKED){
-                            $device->setState(StateType::LOCKED);
-                            $this->deviceModel->updateState($device);
-                        }
-                        break;
-                    }
-                }
+            $device = $this->deviceModel->getDevice($deviceId);
+            if(!empty($device)){
+                $this->changeState->change($device);
             }
         }
 
-        return $this->render('dashboard/index.html.twig', [
-            'devices' => $this->deviceModel->getAllDoorDevicesDto(),
-        ]);
+        return new JsonResponse($this->deviceModel->getDeviceDto($deviceId));
     }
 
-    private function mapToDeviceState($newValue)
+    /**
+     * @Route("/correct-rotation", name="correct-rotation")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
+    public function correcttherotationoftheengine(Request $request)
     {
-        $return = null;
-        switch ($newValue){
-            case 'lock':{
-                $return = 'lock';
-                break;
-            }
-            case 'unlock':{
-                $return = 'unlock';
-                break;
+        $deviceId = $request->request->get('deviceId', null);
+        $rotation = $request->request->get('rotation', null);
+
+        if($request->isMethod(Request::METHOD_POST)){
+            $device = $this->deviceModel->getDevice($deviceId);
+            if(!empty($device)){
+                $this->changeState->correct($device, $rotation);
             }
         }
-        return $return;
+
+        return new JsonResponse($this->deviceModel->getDeviceDto($deviceId));
     }
 }

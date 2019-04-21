@@ -5,6 +5,7 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
+    relay-board: false
 
 services:
     # default configuration for services in *this* file
@@ -24,5 +25,6 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    raspberry.service:
+        class: App\Service\RaspberryService\RaspberryService
+        arguments: ['@App\Repository\PinRepository']

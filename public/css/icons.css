@@ -1,0 +1,87 @@
+i.icon{
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    display: block;
+}
+
+.icon-users{
+    background-image: url("../img/users-group.svg");
+    width: 40px;
+    height: 40px;
+}
+
+.icon-devices{
+    background-image: url("../img/key.svg");
+    width: 40px;
+    height: 40px;
+}
+
+.icon-setting{
+    background-image: url("../img/settings-gears.svg");
+    width: 40px;
+    height: 40px;
+}
+
+.icon-user{
+    background-image: url("../img/user.svg");
+    width: 40px;
+    height: 40px;
+}
+
+.icon-homecontrol{
+    background-image: url("../img/smartphone.svg");
+    width: 40px;
+    height: 40px;
+}
+
+.icon-locked{
+    background-image: url("../img/locked.svg");
+    width: 40px;
+    height: 40px;
+}
+
+.icon-unlocked{
+    background-image: url("../img/unlocked.svg");
+    width: 40px;
+    height: 40px;
+}
+
+.icon-status-working{
+    background-color: #28a745;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    top: 10px;
+    right: 10px;
+    position: absolute;
+}
+
+.icon-turned-on{
+    background-image: url("../img/turned-on.svg");
+    width: 40px;
+    height: 40px;
+}
+
+.icon-turned-off{
+    background-image: url("../img/turned-off.svg");
+    width: 40px;
+    height: 40px;
+}
+
+.icon-cctv {
+    background-image: url("../img/cctv.svg");
+    width: 40px;
+    height: 40px;
+}
+
+.icon-rolled-up{
+    background-image: url("../img/rolled-up.svg");
+    width: 40px;
+    height: 40px;
+}
+
+.icon-rolled-down{
+    background-image: url("../img/rolled-down.svg");
+    width: 40px;
+    height: 40px;
+}

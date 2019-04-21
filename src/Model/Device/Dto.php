@@ -14,4 +14,11 @@ class Dto
     public $deviceId;
     public $deviceName;
     public $state;
+    public $stateName;
+    public $deviceType;
+    public $deviceTypeName;
+    public $pins;
+    public $status;
+    public $turns;
+    public $currentTurn;
 }
