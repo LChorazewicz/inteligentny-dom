@@ -96,12 +96,12 @@ class ChangeState
             case DeviceType::BLINDS:{
                 switch ($rotation){
                     case 'DOWN':{
-                        $device->setState(StateType::BLINDS_ROLLED_UP);
+                        $device->setState(StateType::BLINDS_ROLLED_DOWN);
                         $this->deviceModel->correctState($device);
                         break;
                     }
                     case 'UP':{
-                        $device->setState(StateType::BLINDS_ROLLED_DOWN);
+                        $device->setState(StateType::BLINDS_ROLLED_UP);
                         $this->deviceModel->correctState($device);
                         break;
                     }
