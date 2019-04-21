@@ -49,7 +49,7 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
      */
     public function changeState(): void
     {
-        $this->execScript($this->device->getTurns());
+        $this->execScript($this->device->getTurns(), 256);
     }
 
     /**
@@ -57,16 +57,16 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
      */
     public function correctState(): void
     {
-        $this->execScript(1);
+        $this->execScript(1, 64);
     }
 
     /**
      * @param int $turns
+     * @param int $engineStepsPerCicle
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Exception
      */
-    private function execScript(int $turns)
+    private function execScript(int $turns, int $engineStepsPerCicle)
     {
         $outputState = null;
         $pins = $this->getPinsForPythonScript($this->device->getPins());
@@ -77,7 +77,7 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
 
         switch ($state){
             case StateType::BLINDS_ROLLED_UP:{
-                $command = $command  . " 1";
+                $command = $command  . " 1 " . $engineStepsPerCicle;
                 $this->logger->info("run ", ['command' => $command]);
                 for($i = 0; $i <= $turns - 1; $i++){
                     $outputState = exec($command);
@@ -87,7 +87,7 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
                 break;
             }
             case StateType::BLINDS_ROLLED_DOWN:{
-                $command = $command  . " 2";
+                $command = $command  . " 2" . $engineStepsPerCicle;
                 $this->logger->info("run ", ['command' => $command]);
                 for($i = 0; $i <= $turns - 1; $i++){
                     $outputState = exec($command);
