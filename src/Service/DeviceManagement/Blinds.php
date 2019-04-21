@@ -49,7 +49,7 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
      */
     public function changeState(): void
     {
-        $this->execScript($this->device->getTurns(), 256);
+        $this->execScript($this->device->getTurns(), 256, true);
     }
 
     /**
@@ -57,16 +57,17 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
      */
     public function correctState(): void
     {
-        $this->execScript(1, 64);
+        $this->execScript(1, 64, false);
     }
 
     /**
      * @param int $turns
      * @param int $engineStepsPerCicle
+     * @param bool $updataData
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    private function execScript(int $turns, int $engineStepsPerCicle)
+    private function execScript(int $turns, int $engineStepsPerCicle, bool $updataData)
     {
         $outputState = null;
         $pins = $this->getPinsForPythonScript($this->device->getPins());
@@ -81,7 +82,9 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
                 $this->logger->info("run ", ['command' => $command]);
                 for($i = 0; $i <= $turns - 1; $i++){
                     $outputState = exec($command);
-                    $this->device->setCurrentTurn($deviceTurns - 1);
+                    if($updataData){
+                        $this->device->setCurrentTurn($deviceTurns - 1);
+                    }
                 }
                 $this->device->setState(StateType::BLINDS_ROLLED_DOWN);
                 break;
@@ -91,7 +94,9 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
                 $this->logger->info("run ", ['command' => $command]);
                 for($i = 0; $i <= $turns - 1; $i++){
                     $outputState = exec($command);
-                    $this->device->setCurrentTurn($deviceTurns + 1);
+                    if($updataData){
+                        $this->device->setCurrentTurn($deviceTurns + 1);
+                    }
                 }
                 $this->device->setState(StateType::BLINDS_ROLLED_UP);
                 break;
@@ -102,7 +107,7 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
 
         $this->logger->info('response status', ['output' => $outputState]);
 
-        if($outputState == 1){
+        if($updataData && $outputState == 1){
             $this->deviceRepository->update($this->device);
         }
     }
