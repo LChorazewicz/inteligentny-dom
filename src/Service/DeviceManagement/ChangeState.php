@@ -91,6 +91,8 @@ class ChangeState
                 switch ($rotation){
                     case 'DOWN':
                     case 'UP': {
+                        $state = $rotation == 'DOWN' ? StateType::BLINDS_ROLLED_UP : StateType::BLINDS_ROLLED_DOWN;
+                        $device->setState($state);
                         (new Blinds($device, $this->logger, $this->deviceRepository))->correctState();
                         break;
                     }
