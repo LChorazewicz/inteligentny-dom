@@ -57,7 +57,7 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
      */
     public function correctState(): void
     {
-        $this->execScript(1, 64, false);
+        $this->execScript(1, 16, false);
     }
 
     /**
