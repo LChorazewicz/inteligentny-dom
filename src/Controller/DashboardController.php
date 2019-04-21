@@ -55,4 +55,25 @@ class DashboardController extends AbstractController
 
         return new JsonResponse($this->deviceModel->getDeviceDto($deviceId));
     }
+
+    /**
+     * @Route("/correct-rotation", name="correct-rotation")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
+    public function correcttherotationoftheengine(Request $request)
+    {
+        $deviceId = $request->request->get('deviceId', null);
+        $rotation = $request->request->get('rotation', null);
+
+        if($request->isMethod(Request::METHOD_POST)){
+            $device = $this->deviceModel->getDevice($deviceId);
+            if(!empty($device)){
+                $this->changeState->correct($device, $rotation);
+            }
+        }
+
+        return new JsonResponse($this->deviceModel->getDeviceDto($deviceId));
+    }
 }

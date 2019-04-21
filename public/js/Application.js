@@ -46,6 +46,19 @@ class Application {
             }
         });
     }
+    correctState(deviceId, option){
+        $.ajax({
+            url: Endpoint.getCorrectStateEndpoint(),
+            method: "POST",
+            data: {
+                deviceId: deviceId,
+                rotation: option
+            }
+        }).done(function(response, responseText) {
+            console.log(response);
+            console.log(responseText);
+        });
+    }
 
     static toggleNavigation(){
         let menu = $(".menu");

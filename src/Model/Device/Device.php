@@ -138,6 +138,26 @@ class Device
 
     }
 
+    /**
+     * @param \App\Entity\Device $deviceEntity
+     * @throws \Exception
+     */
+    public function correctState(\App\Entity\Device $deviceEntity)
+    {
+        $result = null;
+        $device = null;
+        switch ($deviceEntity->getDeviceType()){
+            case DeviceType::BLINDS:{
+                $device = new Blinds($this->logger); break;
+            }
+            default:{
+                throw new \Exception("unknown device type");
+            }
+        }
+
+        $device->changeState($deviceEntity->getState(), explode(', ', $deviceEntity->getPins()), 1);
+    }
+
     public function getDeviceDto($deviceId)
     {
         $device = $this->deviceRepository->findDevice($deviceId);
