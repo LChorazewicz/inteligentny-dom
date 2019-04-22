@@ -39,6 +39,16 @@
             </select><br><br>
         </div>
 
+        <div id="box-direction" style="display: none;">
+            <label for="direction">Device engine direction</label>
+            <select name="direction" id="direction" onchange="operation(this)">
+                <option value="none" disabled selected>-- select --</option>
+                <option value="1">Left</option>
+                <option value="2" >Right</option>
+                <option value="3">Upside down - left</option>
+                <option value="4">Upside down - right</option>
+            </select><br>
+        </div>
 
         <div id="box-number-of-turns" style="display: none;">
             <label for="number-of-turns">Number of engine turns to <span></span></label>
@@ -58,36 +68,30 @@
                 case "type": {
                     $('#state option:eq(0)').prop('selected', true);
                     switch (parseInt(context.value)) {
-                        case 4:{
+                        case 4:{//blinds
                             $("#box-state").show();
-
+                            $("#box-direction").show();
                             $("#blinds-group").show();
-
                             $("#light-group").hide();
                             $("#door-group").hide();
-
                             break;
                         }
-                        case 1:{
+                        case 1:{//door
                             $("#box-state").show();
-
+                            $("#box-direction").hide();
                             $("#door-group").show();
-
                             $("#blinds-group").hide();
                             $("#light-group").hide();
                             $("#box-number-of-turns").hide();
-
                             break;
                         }
-                        case 3:{
+                        case 3:{//light
                             $("#box-state").show();
-
+                            $("#box-direction").hide();
                             $("#light-group").show();
-
                             $("#blinds-group").hide();
                             $("#door-group").hide();
                             $("#box-number-of-turns").hide();
-
                             break;
                         }
                     }
@@ -95,7 +99,7 @@
                 }
                 case "state": {
                     switch (parseInt(context.value)) {
-                        case 5:{
+                        case 5:{//roll up
                             let element = $("#box-number-of-turns"),
                                 span = element.find("label").find("span")[0];
 
@@ -103,7 +107,7 @@
                             element.show();
                             break;
                         }
-                        case 6: {
+                        case 6: {//roll down
                             let element = $("#box-number-of-turns"),
                                 span = element.find("label").find("span")[0];
 

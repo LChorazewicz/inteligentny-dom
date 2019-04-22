@@ -47,6 +47,11 @@ class Device
     private $currentTurn;
 
     /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $deviceDirection;
+
+    /**
      * @ORM\Column(type="boolean")
      */
     private $status;
@@ -191,4 +196,21 @@ class Device
     }
 
 
+    /**
+     * @return int|null
+     */
+    public function getDeviceDirection(): ?int
+    {
+        return $this->deviceDirection;
+    }
+
+    /**
+     * @param int|null $deviceDirection
+     * @return Device
+     */
+    public function setDeviceDirection($deviceDirection)
+    {
+        $this->deviceDirection = $deviceDirection;
+        return $this;
+    }
 }

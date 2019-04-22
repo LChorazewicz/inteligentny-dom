@@ -10,6 +10,7 @@ namespace App\Service\DeviceManagement;
 
 
 use App\Entity\Device;
+use App\Model\Device\DeviceDirection;
 use App\Model\Device\StateType;
 use App\Repository\DeviceRepository;
 use Psr\Log\LoggerInterface;
@@ -71,44 +72,65 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
     {
         $outputState = null;
         $pins = $this->getPinsForPythonScript($this->device->getPins());
-        $state = $this->device->getState();
+        $previousState = $this->device->getState();
         $command = "cd ../src/Scripts && python motor.py " . $pins;
-        $this->logger->info("Change motor state in progress", ['state' => $state, 'pins' => $pins, 'turns' => $turns]);
-        $deviceTurns = ($this->device->getTurns() != null) ? $this->device->getTurns() : 0;
+        $this->logger->info("Change motor state in progress", ['state' => $previousState, 'pins' => $pins, 'turns' => $turns]);
+        $whichWay = $this->inWhichWay($this->device->getDeviceDirection());
 
-        switch ($state){
+        switch ($previousState){
             case StateType::BLINDS_ROLLED_UP:{
-                $command = $command  . " 1 " . $engineStepsPerCicle;
+                $command = $command  . " " . $whichWay . " " . $engineStepsPerCicle;
                 $this->logger->info("run ", ['command' => $command]);
-                for($i = 0; $i <= $turns - 1; $i++){
+                for($i = 1; $i <= $turns; $i++){
                     $outputState = exec($command);
                     if($updataData){
-                        $this->device->setCurrentTurn($deviceTurns - 1);
+                        $this->device->setCurrentTurn($this->device->getCurrentTurn() - 1);
                     }
                 }
                 $this->device->setState(StateType::BLINDS_ROLLED_DOWN);
                 break;
             }
             case StateType::BLINDS_ROLLED_DOWN:{
-                $command = $command  . " 2 " . $engineStepsPerCicle;
+                $command = $command  . " " . $whichWay . " " . $engineStepsPerCicle;
                 $this->logger->info("run ", ['command' => $command]);
-                for($i = 0; $i <= $turns - 1; $i++){
+                for($i = 1; $i <= $turns; $i++){
                     $outputState = exec($command);
                     if($updataData){
-                        $this->device->setCurrentTurn($deviceTurns + 1);
+                        $this->device->setCurrentTurn($this->device->getCurrentTurn() + 1);
                     }
                 }
                 $this->device->setState(StateType::BLINDS_ROLLED_UP);
                 break;
             }
             default:
-                throw new \Exception("Unknown state type " . $state);
+                throw new \Exception("Unknown state type " . $previousState);
         }
 
         $this->logger->info('response status', ['output' => $outputState]);
 
-        if($updataData && $outputState == 1){
+        if((GPIO_MOCK && $updataData) || ($updataData && $outputState == 1)){
             $this->deviceRepository->update($this->device);
         }
+    }
+
+    private function inWhichWay(?int $getDeviceDirection)
+    {
+        $way = self::ENGINE_TURN_UP;
+        switch ($getDeviceDirection){
+            case DeviceDirection::LEFT:{
+                $way = self::ENGINE_TURN_UP;
+                break;
+            }
+            case DeviceDirection::RIGHT:{
+                $way = self::ENGINE_TURN_DOWN;
+                break;
+            }
+            case DeviceDirection::UPSIDE_DOWN_LEFT:
+            case DeviceDirection::UPSIDE_DOWN_RIGHT:{
+                //todo
+                break;
+            }
+        }
+        return $way;
     }
 }

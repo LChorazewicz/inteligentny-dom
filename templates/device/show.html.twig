@@ -36,8 +36,12 @@
                 <td>{{ device.currentTurn|default('None') }}</td>
             </tr>
             <tr>
+                <th>DeviceDirection</th>
+                <td>{{ device.deviceDirectionName|default('None') }}</td>
+            </tr>
+            <tr>
                 <th>status</th>
-                <td>{{ device.status ? 'Acrive' : 'Inactive' }}</td>
+                <td>{{ device.status ? 'Active' : 'Inactive' }}</td>
             </tr>
             {% if device.deviceType == 4 %}
                 <tr>

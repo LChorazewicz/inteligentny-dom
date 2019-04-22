@@ -75,7 +75,7 @@ class Light extends DeviceAbstract implements DeviceChangeStateInterface
 
         $this->logger->info('response status', ['output' => $outputState]);
 
-        if($outputState == 1){
+        if((GPIO_MOCK && $outputState == 0) || $outputState == 1){
             $this->deviceRepository->update($this->device);
         }
     }

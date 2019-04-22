@@ -11,6 +11,10 @@ namespace App\Service\DeviceManagement;
 
 abstract class DeviceAbstract
 {
+    const ENGINE_TURN_UP = 1;
+
+    const ENGINE_TURN_DOWN = 2;
+
     /**
      * @param string $pins
      * @return string

@@ -13,6 +13,7 @@
                 <th>pins</th>
                 <th>Turns to open/close</th>
                 <th>Current turn</th>
+                <th>Direction</th>
                 <th>status</th>
                 <th>actions</th>
             </tr>
@@ -27,6 +28,7 @@
                 <td>{{ device.pins|default('None') }}</td>
                 <td>{{ device.turns|default('None') }}</td>
                 <td>{{ device.currentTurn|default('None') }}</td>
+                <td>{{ device.deviceDirectionName|default('None') }}</td>
                 <td>{{ device.status ? 'Active' : 'Inactive' }}</td>
                 <td>
                     <a href="{{ path('device_show', {'id': device.deviceId}) }}">show</a>

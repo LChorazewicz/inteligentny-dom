@@ -49,6 +49,7 @@ class DeviceController extends AbstractController
             $device->setName($request->request->get("name", null));
             $device->setState($request->request->getInt("state", null));
             $device->setTurns($request->request->getInt("number-of-turns", null));
+            $device->setDeviceDirection($request->request->getInt("direction", null));
             $pins = $request->request->get("pins", []);
             $device->setPins(explode(',', $pins));
             $this->deviceModel->addDevice($device);
@@ -90,6 +91,7 @@ class DeviceController extends AbstractController
                 $deviceToEdit->setName($request->request->get("name", $deviceToEdit->getName()));
                 $deviceToEdit->setState($request->request->getInt("state", $deviceToEdit->getState()));
                 $deviceToEdit->setTurns($request->request->getInt("number-of-turns", $deviceToEdit->getTurns()));
+                $deviceToEdit->setDeviceDirection($request->request->getInt("direction", $deviceToEdit->getDeviceDirection()));
                 $pins = $request->request->get("pins", $deviceToEdit->getPins());
                 $deviceToEdit->setPins(explode(',', $pins));
                 $this->deviceModel->addDevice($deviceToEdit);

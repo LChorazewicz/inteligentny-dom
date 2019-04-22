@@ -58,6 +58,8 @@ class Device
         $deviceDto->pins = empty($device->getPins()) ? null : $device->getPins();
         $deviceDto->turns = empty($device->getTurns()) ? null : $device->getTurns();
         $deviceDto->currentTurn = empty($device->getTurns()) ? null : $device->getCurrentTurn();
+        $deviceDto->deviceDirection = $device->getDeviceDirection();
+        $deviceDto->deviceDirectionName = $this->mapDeviceDirection($device->getDeviceDirection());
         $deviceDto->status = $device->getStatus();
         return $deviceDto;
     }
@@ -184,5 +186,31 @@ class Device
         }
         return $result;
     }
-
+    /**
+     * @param int|null $getDeviceDirection
+     * @return string|null
+     */
+    public function mapDeviceDirection(?int $getDeviceDirection): ?string
+    {
+        $result = "";
+        switch ($getDeviceDirection){
+            case DeviceDirection::LEFT: {
+                $result = "Left";
+                break;
+            }
+            case DeviceDirection::RIGHT: {
+                $result = "Right";
+                break;
+            }
+            case DeviceDirection::UPSIDE_DOWN_LEFT: {
+                $result = "Upside down - left";
+                break;
+            }
+            case DeviceDirection::UPSIDE_DOWN_RIGHT: {
+                $result = "Upside down - right";
+                break;
+            }
+        }
+        return $result;
+    }
 }
