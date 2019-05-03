@@ -66,11 +66,23 @@ class ChangeState
                 }
                 break;
             }
+        }
+    }
+
+    /**
+     * @param Device $device
+     * @param int $percent
+     * @throws \Exception
+     */
+    public function moveByPercent(Device $device, int $percent)
+    {
+        $result = null;
+        switch ($device->getDeviceType()){
             case DeviceType::BLINDS:{
                 switch ($device->getState()){
                     case StateType::BLINDS_ROLLED_DOWN:
                     case StateType::BLINDS_ROLLED_UP: {
-                        (new Blinds($device, $this->logger, $this->deviceRepository))->changeState();
+                        (new Blinds($device, $this->logger, $this->deviceRepository))->moveByPercent($percent);
                         break;
                     }
                 }

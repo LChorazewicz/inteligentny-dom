@@ -6,7 +6,7 @@
     {% for device in devices %}
         <section onclick="
                 let application = new Application();
-                application.changeState({{ device['deviceId'] }})"
+                application.openModalForDevice('modal-device', {{ device['deviceId'] }})"
                  class="tile bg-color-light-blue w-250" id="device-{{ device['deviceId'] }}">
             <i class="icon state-icon
                 {% if(device['state'] == 1) %}
@@ -19,6 +19,25 @@
                     icon-turned-off
                 {% elseif(device['state'] == 5) %}
                     icon-rolled-up
+                    {% if(device['openDegree'] >= 1 and device['openDegree'] <= 10) %}
+                        icon-rolled-up-10
+                    {% elseif(device['openDegree'] >= 11 and device['openDegree'] <= 20) %}
+                        icon-rolled-up-20
+                    {% elseif(device['openDegree'] >= 21 and device['openDegree'] <= 30) %}
+                        icon-rolled-up-30
+                    {% elseif(device['openDegree'] >= 31 and device['openDegree'] <= 40) %}
+                        icon-rolled-up-40
+                    {% elseif(device['openDegree'] >= 41 and device['openDegree'] <= 50) %}
+                        icon-rolled-up-50
+                    {% elseif(device['openDegree'] >= 51 and device['openDegree'] <= 60) %}
+                        icon-rolled-up-60
+                    {% elseif(device['openDegree'] >= 61 and device['openDegree'] <= 70) %}
+                        icon-rolled-up-70
+                    {% elseif(device['openDegree'] >= 71 and device['openDegree'] <= 80) %}
+                        icon-rolled-up-80
+                    {% elseif(device['openDegree'] >= 81 and device['openDegree'] <= 90) %}
+                        icon-rolled-up-90
+                    {% endif %}
                 {% elseif(device['state'] == 6) %}
                     icon-rolled-down
                 {% endif %}"></i>
@@ -26,6 +45,23 @@
 
             <span>{{ device['deviceName'] }}</span>
         </section>
+        <div class="modal" id="modal-device-{{ device['deviceId'] }}">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <i class="icon icon-close modal-close" onclick="Application.closeModal('modal-device-' + {{ device['deviceId'] }})"></i>
+                </div>
+                <div class="modal-content">
+                    <label for="move">Move</label><br>
+                    <input type="range" min="0" max="100" value="50" class="slider" id="move">
+                    <button onclick="let app = new Application(); app.moveBlinds({{ device['deviceId'] }}, $('#move').val())">Move</button><br>
+
+                    <button id="changeState" onclick="let application = new Application(); application.changeState({{ device['deviceId'] }})">Roll up</button>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-close" onclick="Application.closeModal('modal-device-' + {{ device['deviceId'] }})">Close</button>
+                </div>
+            </div>
+        </div>
     {% endfor %}
 {% endblock %}
 {% block javascripts %}

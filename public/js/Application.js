@@ -1,5 +1,6 @@
 class Application {
     changeState(deviceId){
+        let context = this;
         $.ajax({
             url: Endpoint.getChangeStateEndpoint(),
             method: "POST",
@@ -42,7 +43,7 @@ class Application {
                         break;
                     }
                 }
-
+                context.updateModal('modal-device-' + response.deviceId, response)
             }
         });
     }
@@ -63,5 +64,61 @@ class Application {
     static toggleNavigation(){
         let menu = $(".menu");
         menu.toggleClass("open");
+    }
+
+    openModalForDevice(modalId, deviceId){
+        let context = this;
+        $.ajax({
+            url: Endpoint.getDeviceInfoEndpoint(),
+            method: "GET",
+            data: {
+                device_id: deviceId,
+            }
+        }).done(function(response) {
+            context._openModalForDevice(modalId + "-" + deviceId, response);
+        });
+    }
+
+    _openModalForDevice(modalId, data){
+        console.log(data);
+        this.updateModal(modalId, data);
+        $("#" + modalId).show();
+    }
+
+    /**
+     * @param modalId
+     * @param data
+     * @desc modalId = modal-device-10, data = device dto
+     */
+    updateModal(modalId, data){
+        switch (data.deviceType) {
+            case 4:{
+                let slider = $('#' + modalId + ' #move');
+                slider.attr('value', data.openDegree !== null ? data.openDegree : 0);
+
+                let changeState = $('#' + modalId + ' #changeState');
+                changeState.text(data.state === 5 ? "Roll down" : "Roll up");
+
+                console.log('#' + modalId + ' #move', '#' + modalId + ' #changeState');
+            }
+        }
+    }
+
+    moveBlinds(deviceId, percent){
+        let context = this;
+        $.ajax({
+            url: Endpoint.getMoveBlindsEndpoint(),
+            method: "POST",
+            data: {
+                deviceId: deviceId,
+                percent: percent
+            }
+        }).done(function(response) {
+            context.updateModal('modal-device-' + deviceId, response);
+        });
+    }
+
+    static closeModal(modalId, deviceId){
+        $("#" + modalId).hide();
     }
 }

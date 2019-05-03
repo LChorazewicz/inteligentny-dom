@@ -6,6 +6,7 @@ use App\Entity\Device;
 use App\Model\Device\DeviceType;
 use App\Model\Device\Dto;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Id\AssignedGenerator;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -35,6 +36,7 @@ class DeviceRepository extends ServiceEntityRepository
 
     /**
      * @param Device $device
+     * @return int
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -42,6 +44,7 @@ class DeviceRepository extends ServiceEntityRepository
     {
         $this->getEntityManager()->persist($device);
         $this->getEntityManager()->flush();
+        return $device->getId();
     }
 
     /**
@@ -62,5 +65,18 @@ class DeviceRepository extends ServiceEntityRepository
     public function findDevice($deviceId)
     {
         return $this->findOneBy(['id' => $deviceId, 'status' => 1]);
+    }
+
+    /**
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function deleteAll()
+    {
+        $entities = $this->findAll();
+        $em = $this->getEntityManager();
+        foreach ($entities as $entity) {
+            $em->remove($entity);
+        }
+        $em->flush();
     }
 }

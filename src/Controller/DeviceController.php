@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Device;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,6 +23,7 @@ class DeviceController extends AbstractController
     {
         $this->deviceModel = $deviceModel;
     }
+
     /**
      * @Route("/", name="device_index", methods={"GET"})
      * @return Response
@@ -31,6 +33,18 @@ class DeviceController extends AbstractController
         return $this->render('device/index.html.twig', [
             'devices' => $this->deviceModel->findAllDevicesDto(),
         ]);
+    }
+
+    /**
+     * @Route("/device-info", name="device_info", methods={"GET"})
+     * @param Request $request
+     * @return Response
+     */
+    public function deviceinfo(Request $request): Response
+    {
+        $deviceId = $request->query->getInt('device_id', null);
+
+        return new JsonResponse(!is_null($deviceId) ? $this->deviceModel->findDeviceDto($deviceId) : []);
     }
 
     /**

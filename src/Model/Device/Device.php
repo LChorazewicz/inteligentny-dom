@@ -46,6 +46,14 @@ class Device
         return $dtos;
     }
 
+    /**
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function deleteAllDevices()
+    {
+        $this->deviceRepository->deleteAll();
+    }
+
     public function mapDeviceToDto(\App\Entity\Device $device)
     {
         $deviceDto = new Dto();
@@ -61,6 +69,9 @@ class Device
         $deviceDto->deviceDirection = $device->getDeviceDirection();
         $deviceDto->deviceDirectionName = $this->mapDeviceDirection($device->getDeviceDirection());
         $deviceDto->status = $device->getStatus();
+        if($deviceDto->currentTurn != null && $deviceDto->turns != null){
+            $deviceDto->openDegree = $deviceDto->currentTurn / $deviceDto->turns * 100;
+        }
         return $deviceDto;
     }
 
@@ -75,6 +86,7 @@ class Device
 
     /**
      * @param \App\Entity\Device $device
+     * @return int
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Exception
@@ -212,5 +224,14 @@ class Device
             }
         }
         return $result;
+    }
+
+    /**
+     * @param int $deviceId
+     * @return array
+     */
+    public function findDeviceDto(int $deviceId): array
+    {
+        return (array)$this->mapDeviceToDto($this->deviceRepository->findDevice($deviceId));
     }
 }

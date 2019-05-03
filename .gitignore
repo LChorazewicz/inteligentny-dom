@@ -10,3 +10,7 @@ vendor/
 .idea
 .env
 /config/config.php
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###

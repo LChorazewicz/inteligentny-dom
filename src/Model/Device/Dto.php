@@ -23,4 +23,5 @@ class Dto
     public $currentTurn;
     public $deviceDirection;
     public $deviceDirectionName;
+    public $openDegree;
 }

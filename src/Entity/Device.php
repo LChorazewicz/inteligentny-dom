@@ -195,7 +195,6 @@ class Device
         return $this;
     }
 
-
     /**
      * @return int|null
      */

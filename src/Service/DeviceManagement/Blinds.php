@@ -10,12 +10,11 @@ namespace App\Service\DeviceManagement;
 
 
 use App\Entity\Device;
-use App\Model\Device\DeviceDirection;
 use App\Model\Device\StateType;
 use App\Repository\DeviceRepository;
 use Psr\Log\LoggerInterface;
 
-class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, CorrectMotorInterface
+class Blinds extends DeviceAbstract implements CorrectMotorInterface
 {
     /**
      * @var LoggerInterface
@@ -33,6 +32,11 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
     private $deviceRepository;
 
     /**
+     * @var int
+     */
+    private $inWhichWay;
+
+    /**
      * Door constructor.
      * @param Device $device
      * @param LoggerInterface $logger
@@ -48,62 +52,54 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
     /**
      * @throws \Exception
      */
-    public function changeState(): void
+    public function correctState(): void
     {
-        $this->execScript($this->device->getTurns(), 256, true);
+        $this->execScript(1, 16, $this->inWhichWay($this->device->getDeviceDirection()), false);
     }
 
     /**
+     * @param int $percent
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Exception
      */
-    public function correctState(): void
+    public function moveByPercent(int $percent)
     {
-        $this->execScript(1, 16, false);
+        $this->execScript($this->convertPercentagesIntoTurns($percent), 256, $this->inWhichWay, true);
     }
 
     /**
      * @param int $turns
      * @param int $engineStepsPerCicle
+     * @param int $whichWay
      * @param bool $updataData
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    private function execScript(int $turns, int $engineStepsPerCicle, bool $updataData)
+    private function execScript(int $turns, int $engineStepsPerCicle, int $whichWay, bool $updataData)
     {
         $outputState = null;
         $pins = $this->getPinsForPythonScript($this->device->getPins());
         $previousState = $this->device->getState();
-        $command = "cd ../src/Scripts && python motor.py " . $pins;
-        $this->logger->info("Change motor state in progress", ['state' => $previousState, 'pins' => $pins, 'turns' => $turns]);
-        $whichWay = $this->inWhichWay($this->device->getDeviceDirection());
+        $command = "cd " . dirname(__DIR__) . "/../Scripts && python motor.py " . $pins . " " . $whichWay . " " . $engineStepsPerCicle;
+        $this->logger->info("Change motor state in progress", ['state' => $previousState, 'pins' => $pins, 'turns' => $turns, 'command' => $command]);
 
         switch ($previousState){
-            case StateType::BLINDS_ROLLED_UP:{
-                $command = $command  . " " . $whichWay . " " . $engineStepsPerCicle;
-                $this->logger->info("run ", ['command' => $command]);
-                for($i = 1; $i <= $turns; $i++){
-                    $outputState = exec($command);
-                    if($updataData){
-                        $this->device->setCurrentTurn($this->device->getCurrentTurn() - 1);
-                    }
-                }
-                $this->device->setState(StateType::BLINDS_ROLLED_DOWN);
-                break;
-            }
+            case StateType::BLINDS_ROLLED_UP:
             case StateType::BLINDS_ROLLED_DOWN:{
-                $command = $command  . " " . $whichWay . " " . $engineStepsPerCicle;
-                $this->logger->info("run ", ['command' => $command]);
                 for($i = 1; $i <= $turns; $i++){
-                    $outputState = exec($command);
+                    $outputState = !GPIO_MOCK ? exec($command) : 1;
+
                     if($updataData){
-                        $this->device->setCurrentTurn($this->device->getCurrentTurn() + 1);
+                        $this->device->setCurrentTurn($this->addOrMinusAndGetStep());
                     }
                 }
-                $this->device->setState(StateType::BLINDS_ROLLED_UP);
+                $this->updateState();
                 break;
             }
-            default:
+            default:{
                 throw new \Exception("Unknown state type " . $previousState);
+            }
         }
 
         $this->logger->info('response status', ['output' => $outputState]);
@@ -113,24 +109,42 @@ class Blinds extends DeviceAbstract implements DeviceChangeStateInterface, Corre
         }
     }
 
-    private function inWhichWay(?int $getDeviceDirection)
+    private function convertPercentagesIntoTurns(int $percent): int
     {
-        $way = self::ENGINE_TURN_UP;
-        switch ($getDeviceDirection){
-            case DeviceDirection::LEFT:{
-                $way = self::ENGINE_TURN_UP;
-                break;
-            }
-            case DeviceDirection::RIGHT:{
-                $way = self::ENGINE_TURN_DOWN;
-                break;
-            }
-            case DeviceDirection::UPSIDE_DOWN_LEFT:
-            case DeviceDirection::UPSIDE_DOWN_RIGHT:{
-                //todo
-                break;
-            }
+        $turn = $percent / 100 * $this->device->getTurns();
+        $return = 0;
+        if($turn > $this->device->getCurrentTurn()){
+            $return = $turn - $this->device->getCurrentTurn();
+            $this->inWhichWay = self::ENGINE_TURN_UP;
+        }elseif($turn < $this->device->getCurrentTurn()){
+            $return = $this->device->getCurrentTurn() - $turn;
+            $this->inWhichWay = self::ENGINE_TURN_DOWN;
+        }else{
+            $this->inWhichWay = self::ENGINE_TURN_DOWN;
         }
-        return $way;
+
+        return $return;
+    }
+
+    private function addOrMinusAndGetStep(): int
+    {
+        $result = 0;
+        if($this->device->getState() === StateType::BLINDS_ROLLED_UP){
+            $result = $this->device->getCurrentTurn() - 1;
+        }elseif($this->device->getState() === StateType::BLINDS_ROLLED_DOWN){
+            $result = $this->device->getCurrentTurn() + 1;
+        }
+        return $result;
+    }
+
+    private function updateState()
+    {
+        if($this->device->getCurrentTurn() > 0 && $this->device->getCurrentTurn() <= $this->device->getTurns()){
+            $this->device->setState(StateType::BLINDS_ROLLED_UP);
+        }
+
+        if($this->device->getCurrentTurn() === 0){
+            $this->device->setState(StateType::BLINDS_ROLLED_DOWN);
+        }
     }
 }
