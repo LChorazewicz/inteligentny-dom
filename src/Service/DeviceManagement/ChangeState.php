@@ -45,11 +45,11 @@ class ChangeState
     public function change(Device $device)
     {
         $result = null;
-        switch ($device->getDeviceType()){
+        switch ($device->getDeviceType()) {
             case DeviceType::DOOR:{
-                switch ($device->getState()){
+                switch ($device->getState()) {
                     case StateType::DOOR_UNLOCKED:
-                    case StateType::DOOR_LOCKED: {
+                    case StateType::DOOR_LOCKED:{
                         (new Door($device, $this->logger, $this->deviceRepository))->changeState();
                         break;
                     }
@@ -57,10 +57,20 @@ class ChangeState
                 break;
             }
             case DeviceType::LIGHT:{
-                switch ($device->getState()){
+                switch ($device->getState()) {
                     case StateType::LIGHT_TURNED_ON:
-                    case StateType::LIGHT_TURNED_OFF: {
+                    case StateType::LIGHT_TURNED_OFF:{
                         (new Light($device, $this->logger, $this->deviceRepository))->changeState();
+                        break;
+                    }
+                }
+                break;
+            }
+            case DeviceType::BLINDS:{
+                switch ($device->getState()){
+                    case StateType::BLINDS_ROLLED_DOWN:
+                    case StateType::BLINDS_ROLLED_UP: {
+                        (new Blinds($device, $this->logger, $this->deviceRepository))->changeState();
                         break;
                     }
                 }
@@ -74,7 +84,7 @@ class ChangeState
      * @param int $percent
      * @throws \Exception
      */
-    public function moveByPercent(Device $device, int $percent)
+    public function moveByStep(Device $device, int $percent)
     {
         $result = null;
         switch ($device->getDeviceType()){
@@ -82,7 +92,7 @@ class ChangeState
                 switch ($device->getState()){
                     case StateType::BLINDS_ROLLED_DOWN:
                     case StateType::BLINDS_ROLLED_UP: {
-                        (new Blinds($device, $this->logger, $this->deviceRepository))->moveByPercent($percent);
+                        (new Blinds($device, $this->logger, $this->deviceRepository))->moveByStep($percent);
                         break;
                     }
                 }

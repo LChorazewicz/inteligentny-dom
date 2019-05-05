@@ -37,6 +37,8 @@
                         icon-rolled-up-80
                     {% elseif(device['openDegree'] >= 81 and device['openDegree'] <= 90) %}
                         icon-rolled-up-90
+                    {% elseif(device['openDegree'] >= 91 and device['openDegree'] <= 100) %}
+                        icon-rolled-up-100
                     {% endif %}
                 {% elseif(device['state'] == 6) %}
                     icon-rolled-down
@@ -51,9 +53,9 @@
                     <i class="icon icon-close modal-close" onclick="Application.closeModal('modal-device-' + {{ device['deviceId'] }})"></i>
                 </div>
                 <div class="modal-content">
-                    <label for="move">Move</label><br>
-                    <input type="range" min="0" max="100" value="50" class="slider" id="move">
-                    <button onclick="let app = new Application(); app.moveBlinds({{ device['deviceId'] }}, $('#move').val())">Move</button><br>
+                    <label for="move-{{ device['deviceId'] }}">Move</label><br>
+                    <input type="range" min="0" max="100" value="50" class="slider" id="move-{{ device['deviceId'] }}">
+                    <button onclick="let app = new Application(); app.moveBlinds({{ device['deviceId'] }}, $('#move-{{ device['deviceId'] }}').val())">Move</button><br>
 
                     <button id="changeState" onclick="let application = new Application(); application.changeState({{ device['deviceId'] }})">Roll up</button>
                 </div>

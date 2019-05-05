@@ -1,52 +1,4 @@
 class Application {
-    changeState(deviceId){
-        let context = this;
-        $.ajax({
-            url: Endpoint.getChangeStateEndpoint(),
-            method: "POST",
-            data: {
-                deviceId: deviceId
-            }
-        }).done(function(response, responseText) {
-            console.log(response);
-            console.log(responseText);
-            if(responseText === 'success'){
-                switch (response.state) {
-                    case 1:{//locked
-                        let icon = $('#device-' + deviceId + " .state-icon");
-                        icon.removeClass('icon-unlocked').addClass('icon-locked');
-                        break;
-                    }
-                    case 2:{//unlocked
-                        let icon = $('#device-' + deviceId + " .state-icon");
-                        icon.removeClass('icon-locked').addClass('icon-unlocked');
-                        break;
-                    }
-                    case 3:{//turned-on
-                        let icon = $('#device-' + deviceId + " .state-icon");
-                        icon.removeClass('icon-turned-off').addClass('icon-turned-on');
-                        break;
-                    }
-                    case 4:{//turned-off
-                        let icon = $('#device-' + deviceId + " .state-icon");
-                        icon.removeClass('icon-turned-on').addClass('icon-turned-off');
-                        break;
-                    }
-                    case 5:{//rolled-up
-                        let icon = $('#device-' + deviceId + " .state-icon");
-                        icon.removeClass('icon-rolled-down').addClass('icon-rolled-up');
-                        break;
-                    }
-                    case 6:{//rolled-down
-                        let icon = $('#device-' + deviceId + " .state-icon");
-                        icon.removeClass('icon-rolled-up').addClass('icon-rolled-down');
-                        break;
-                    }
-                }
-                context.updateModal('modal-device-' + response.deviceId, response)
-            }
-        });
-    }
     correctState(deviceId, option){
         $.ajax({
             url: Endpoint.getCorrectStateEndpoint(),
@@ -57,7 +9,6 @@ class Application {
             }
         }).done(function(response, responseText) {
             console.log(response);
-            console.log(responseText);
         });
     }
 
@@ -91,30 +42,129 @@ class Application {
      * @desc modalId = modal-device-10, data = device dto
      */
     updateModal(modalId, data){
+        console.log('wszedłem', data);
         switch (data.deviceType) {
             case 4:{
-                let slider = $('#' + modalId + ' #move');
-                slider.attr('value', data.openDegree !== null ? data.openDegree : 0);
+                let slider = $('#' + modalId + ' #move-' + data.deviceId);
+                // slider.attr('value', data.currentTurn !== null ? data.currentTurn : 0);
+                slider.val(data.currentTurn !== null ? parseInt(data.currentTurn) : 0);
+                slider.attr('max', data.turns);
 
                 let changeState = $('#' + modalId + ' #changeState');
                 changeState.text(data.state === 5 ? "Roll down" : "Roll up");
+            }
+        }
+        switch (data.state) {
+            case 1:{//locked
+                let icon = $('#device-' + data.deviceId + " .state-icon");
+                icon.removeClass('icon-unlocked').addClass('icon-locked');
+                break;
+            }
+            case 2:{//unlocked
+                let icon = $('#device-' + data.deviceId + " .state-icon");
+                icon.removeClass('icon-locked').addClass('icon-unlocked');
+                break;
+            }
+            case 3:{//turned-on
+                let icon = $('#device-' + data.deviceId + " .state-icon");
+                icon.removeClass('icon-turned-off').addClass('icon-turned-on');
+                break;
+            }
+            case 4:{//turned-off
+                let icon = $('#device-' + data.deviceId + " .state-icon");
+                icon.removeClass('icon-turned-on').addClass('icon-turned-off');
+                break;
+            }
+            case 5:{//rolled-up
+                let icon = $('#device-' + data.deviceId + " .state-icon");
+                icon.removeClass('icon-rolled-down').addClass('icon-rolled-up');
+                break;
+            }
+            case 6:{//rolled-down
+                let icon = $('#device-' + data.deviceId + " .state-icon");
+                icon.removeClass('icon-rolled-up').addClass('icon-rolled-down');
+                break;
+            }
+        }
 
-                console.log('#' + modalId + ' #move', '#' + modalId + ' #changeState');
+        switch (data.state) {
+            case 5://rolled-up
+            case 6:{//rolled-down
+                let parent = $('#device-' + data.deviceId);
+                let icon = parent.find('i.state-icon');
+
+                icon.remove();
+
+                let newIcon = document.createElement("i");
+                newIcon.className += 'icon';
+                newIcon.className += ' state-icon';
+
+                if(data.state === 5){
+                    newIcon.className += ' icon-rolled-up';
+                }else if(data.state === 6){
+                    newIcon.className += ' icon-rolled-down';
+                }
+
+                let classToBeAdded = '';
+                if(data.openDegree >= 1 && data.openDegree <= 10){
+                    classToBeAdded = 'icon-rolled-up-10';
+                }else if(data.openDegree >= 11 && data.openDegree <= 20){
+                    classToBeAdded = 'icon-rolled-up-20';
+                }else if(data.openDegree >= 21 && data.openDegree <= 30){
+                    classToBeAdded = 'icon-rolled-up-30';
+                }else if(data.openDegree >= 31 && data.openDegree <= 40){
+                    classToBeAdded = 'icon-rolled-up-40';
+                }else if(data.openDegree >= 41 && data.openDegree <= 50){
+                    classToBeAdded = 'icon-rolled-up-50';
+                }else if(data.openDegree >= 51 && data.openDegree <= 60){
+                    classToBeAdded = 'icon-rolled-up-60';
+                }else if(data.openDegree >= 61 && data.openDegree <= 70){
+                    classToBeAdded = 'icon-rolled-up-70';
+                }else if(data.openDegree >= 71 && data.openDegree <= 80){
+                    classToBeAdded = 'icon-rolled-up-80';
+                }else if(data.openDegree >= 81 && data.openDegree <= 90){
+                    classToBeAdded = 'icon-rolled-up-90';
+                }else if(data.openDegree >= 91 && data.openDegree <= 100){
+                    classToBeAdded = 'icon-rolled-up-100';
+                }
+
+                newIcon.className += ' ' + classToBeAdded;
+
+                console.log('classToBeAdded', classToBeAdded);
+                console.log('newIcon', newIcon);
+
+                parent.append(newIcon);
+                break;
             }
         }
     }
 
-    moveBlinds(deviceId, percent){
+    moveBlinds(deviceId, step){
         let context = this;
         $.ajax({
             url: Endpoint.getMoveBlindsEndpoint(),
             method: "POST",
             data: {
                 deviceId: deviceId,
-                percent: percent
+                step: step
             }
         }).done(function(response) {
+            console.log("step: " + step, response);
             context.updateModal('modal-device-' + deviceId, response);
+        });
+    }
+
+    changeState(deviceId){
+        let context = this;
+        $.ajax({
+            url: Endpoint.getChangeStateEndpoint(),
+            method: "POST",
+            data: {
+                deviceId: deviceId
+            }
+        }).done(function(response) {
+            console.log(response);
+            context.updateModal('modal-device-' + deviceId, response)
         });
     }
 

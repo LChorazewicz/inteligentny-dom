@@ -58,14 +58,27 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
     }
 
     /**
-     * @param int $percent
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function changeState(): void
+    {
+        $turns = $this->device->getTurns();
+        if($this->device->getState() === StateType::BLINDS_ROLLED_UP){
+            $turns = 0;
+        }
+        $this->execScript($this->setTurns($turns), 256, $this->inWhichWay, true);
+    }
+
+    /**
+     * @param int $step
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Exception
      */
-    public function moveByPercent(int $percent)
+    public function moveByStep(int $step)
     {
-        $this->execScript($this->convertPercentagesIntoTurns($percent), 256, $this->inWhichWay, true);
+        $this->execScript($this->setTurns($step), 256, $this->inWhichWay, true);
     }
 
     /**
@@ -91,7 +104,7 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
                     $outputState = !GPIO_MOCK ? exec($command) : 1;
 
                     if($updataData){
-                        $this->device->setCurrentTurn($this->addOrMinusAndGetStep());
+                        $this->device->setCurrentTurn($this->addOrMinusAndGetStep($whichWay));
                     }
                 }
                 $this->updateState();
@@ -109,15 +122,15 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
         }
     }
 
-    private function convertPercentagesIntoTurns(int $percent): int
+    private function setTurns(int $turn): int
     {
-        $turn = $percent / 100 * $this->device->getTurns();
         $return = 0;
-        if($turn > $this->device->getCurrentTurn()){
-            $return = $turn - $this->device->getCurrentTurn();
+        $currentTurn = $this->device->getCurrentTurn();
+        if($turn > $currentTurn){
+            $return = $turn - $currentTurn;
             $this->inWhichWay = self::ENGINE_TURN_UP;
         }elseif($turn < $this->device->getCurrentTurn()){
-            $return = $this->device->getCurrentTurn() - $turn;
+            $return = $currentTurn - $turn;
             $this->inWhichWay = self::ENGINE_TURN_DOWN;
         }else{
             $this->inWhichWay = self::ENGINE_TURN_DOWN;
@@ -126,13 +139,18 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
         return $return;
     }
 
-    private function addOrMinusAndGetStep(): int
+    private function addOrMinusAndGetStep(int $whichWay): int
     {
         $result = 0;
-        if($this->device->getState() === StateType::BLINDS_ROLLED_UP){
-            $result = $this->device->getCurrentTurn() - 1;
-        }elseif($this->device->getState() === StateType::BLINDS_ROLLED_DOWN){
-            $result = $this->device->getCurrentTurn() + 1;
+        switch ($whichWay){
+            case self::ENGINE_TURN_UP:{
+                $result = $this->device->getCurrentTurn() + 1;
+                break;
+            }
+            case self::ENGINE_TURN_DOWN:{
+                $result = $this->device->getCurrentTurn() - 1;
+                break;
+            }
         }
         return $result;
     }

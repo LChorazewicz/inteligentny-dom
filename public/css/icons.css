@@ -172,3 +172,11 @@ i.icon{
     left: 8px;
     font-weight: bold;
 }
+.icon-rolled-up-100::before {
+    content: "100";
+    color: black;
+    bottom: 10px;
+    position: absolute;
+    left: 4px;
+    font-weight: bold;
+}

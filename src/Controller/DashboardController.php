@@ -85,16 +85,16 @@ class DashboardController extends AbstractController
      * @throws \Exception
      * @Method("POST")
      */
-    public function moveblindsbypercent(Request $request)
+    public function moveblindsbystep(Request $request)
     {
         $deviceId = $request->request->get('deviceId', null);
-        $percent = $request->request->get('percent', null);
+        $step = $request->request->get('step', null);
 
         if($request->isMethod(Request::METHOD_POST)){
             $device = $this->deviceModel->getDevice($deviceId);
             if(!empty($device)){
                 try{
-                    $this->changeState->moveByPercent($device, $percent);
+                    $this->changeState->moveByStep($device, $step);
                 }catch (\Exception $e){
                 }
             }
