@@ -49,6 +49,8 @@ def main(args):
             ControlPin[3] = pin4
         if int(args[5]):
             state = int(args[5])
+        if int(args[6]):
+            turnsPerOneCicle = int(args[6])
         if pin1 >= 0 and pin2 >= 0 and pin3 >= 0 and pin4 >= 0 and (state == 1 or state == 2):
             for pin in ControlPin:
                 GPIO.setup(pin, GPIO.OUT)

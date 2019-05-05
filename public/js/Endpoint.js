@@ -5,4 +5,12 @@ class Endpoint {
     static getCorrectStateEndpoint(){
         return '/correct-rotation';
     };
+
+    static getDeviceInfoEndpoint() {
+        return '/device/device-info'
+    }
+
+    static getMoveBlindsEndpoint() {
+        return '/move';
+    }
 }

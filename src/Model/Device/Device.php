@@ -41,21 +41,38 @@ class Device
         $result = $this->deviceRepository->findAllDevices();
         $dtos = [];
         foreach ($result as $device){
-            $deviceDto = new Dto();
-            $deviceDto->deviceId = $device->getId();
-            $deviceDto->deviceName = $device->getName();
-            $deviceDto->state = $device->getState();
-            $deviceDto->stateName = $this->mapStateName($device->getDeviceType(), $device->getState());
-            $deviceDto->deviceType = $device->getDeviceType();
-            $deviceDto->deviceTypeName = $this->mapDeviceTypeName($device->getDeviceType());
-            $deviceDto->pins = empty($device->getPins()) ? null : $device->getPins();
-            $deviceDto->turns = empty($device->getTurns()) ? null : $device->getTurns();
-            $deviceDto->currentTurn = empty($device->getTurns()) ? null : $device->getCurrentTurn();
-            $deviceDto->status = $device->getStatus();
-            $devicesDto[] = $deviceDto;
-            $dtos[$device->getId()] = (array)$deviceDto;
+            $dtos[$device->getId()] = (array)$this->mapDeviceToDto($device);
         }
         return $dtos;
+    }
+
+    /**
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function deleteAllDevices()
+    {
+        $this->deviceRepository->deleteAll();
+    }
+
+    public function mapDeviceToDto(\App\Entity\Device $device)
+    {
+        $deviceDto = new Dto();
+        $deviceDto->deviceId = $device->getId();
+        $deviceDto->deviceName = $device->getName();
+        $deviceDto->state = $device->getState();
+        $deviceDto->stateName = $this->mapStateName($device->getDeviceType(), $device->getState());
+        $deviceDto->deviceType = $device->getDeviceType();
+        $deviceDto->deviceTypeName = $this->mapDeviceTypeName($device->getDeviceType());
+        $deviceDto->pins = empty($device->getPins()) ? null : $device->getPins();
+        $deviceDto->turns = empty($device->getTurns()) ? null : $device->getTurns();
+        $deviceDto->currentTurn = empty($device->getTurns()) ? null : $device->getCurrentTurn();
+        $deviceDto->deviceDirection = $device->getDeviceDirection();
+        $deviceDto->deviceDirectionName = $this->mapDeviceDirection($device->getDeviceDirection());
+        $deviceDto->status = $device->getStatus();
+        if($deviceDto->currentTurn != null && $deviceDto->turns != null){
+            $deviceDto->openDegree = $deviceDto->currentTurn / $deviceDto->turns * 100;
+        }
+        return $deviceDto;
     }
 
     /**
@@ -69,6 +86,7 @@ class Device
 
     /**
      * @param \App\Entity\Device $device
+     * @return int
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Exception
@@ -104,77 +122,12 @@ class Device
         return $this->deviceRepository->add($device);
     }
 
-    /**
-     * @param \App\Entity\Device $deviceEntity
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Exception
-     */
-    public function updateState(\App\Entity\Device $deviceEntity)
-    {
-        $result = null;
-        $device = null;
-        switch ($deviceEntity->getDeviceType()){
-            case DeviceType::DOOR: {
-                $device = new Door($this->logger); break;
-            }
-            case DeviceType::LIGHT:{
-                $device = new Light($this->logger); break;
-            }
-            case DeviceType::BLINDS:{
-                $device = new Blinds($this->logger); break;
-            }
-            default:{
-                throw new \Exception("unknown device type");
-            }
-        }
-
-        $turns = $deviceEntity->getTurns() != null ? $deviceEntity->getTurns() : 0;
-        $result = $device->changeState($deviceEntity->getState(), explode(', ', $deviceEntity->getPins()), $turns);
-
-        if($result == 1){
-            $this->deviceRepository->update($deviceEntity);
-        }
-
-    }
-
-    /**
-     * @param \App\Entity\Device $deviceEntity
-     * @throws \Exception
-     */
-    public function correctState(\App\Entity\Device $deviceEntity)
-    {
-        $result = null;
-        $device = null;
-        switch ($deviceEntity->getDeviceType()){
-            case DeviceType::BLINDS:{
-                $device = new Blinds($this->logger); break;
-            }
-            default:{
-                throw new \Exception("unknown device type");
-            }
-        }
-
-        $device->changeState($deviceEntity->getState(), explode(', ', $deviceEntity->getPins()), 1);
-    }
-
     public function getDeviceDto($deviceId)
     {
         $device = $this->deviceRepository->findDevice($deviceId);
         $response = [];
         if(!empty($device)){
-            $deviceDto = new Dto();
-            $deviceDto->deviceId = $device->getId();
-            $deviceDto->deviceName = $device->getName();
-            $deviceDto->state = $device->getState();
-            $deviceDto->stateName = $this->mapStateName($device->getDeviceType(), $device->getState());
-            $deviceDto->deviceType = $device->getDeviceType();
-            $deviceDto->deviceTypeName = $this->mapDeviceTypeName($device->getDeviceType());
-            $deviceDto->status = $device->getStatus();
-            $deviceDto->pins = empty($device->getPins()) ? null : $device->getPins();
-            $deviceDto->turns = empty($device->getTurns()) ? null : $device->getTurns();
-            $deviceDto->currentTurn = empty($device->getTurns()) ? null : $device->getCurrentTurn();
-            $response = $deviceDto;
+            $response = $this->mapDeviceToDto($device);
         }
         return $response;
     }
@@ -245,5 +198,40 @@ class Device
         }
         return $result;
     }
+    /**
+     * @param int|null $getDeviceDirection
+     * @return string|null
+     */
+    public function mapDeviceDirection(?int $getDeviceDirection): ?string
+    {
+        $result = "";
+        switch ($getDeviceDirection){
+            case DeviceDirection::LEFT: {
+                $result = "Left";
+                break;
+            }
+            case DeviceDirection::RIGHT: {
+                $result = "Right";
+                break;
+            }
+            case DeviceDirection::UPSIDE_DOWN_LEFT: {
+                $result = "Upside down - left";
+                break;
+            }
+            case DeviceDirection::UPSIDE_DOWN_RIGHT: {
+                $result = "Upside down - right";
+                break;
+            }
+        }
+        return $result;
+    }
 
+    /**
+     * @param int $deviceId
+     * @return array
+     */
+    public function findDeviceDto(int $deviceId): array
+    {
+        return (array)$this->mapDeviceToDto($this->deviceRepository->findDevice($deviceId));
+    }
 }

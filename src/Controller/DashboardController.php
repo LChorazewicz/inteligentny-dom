@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\DeviceManagement\ChangeState;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -70,7 +71,32 @@ class DashboardController extends AbstractController
         if($request->isMethod(Request::METHOD_POST)){
             $device = $this->deviceModel->getDevice($deviceId);
             if(!empty($device)){
-                $this->changeState->correct($device, $rotation);
+                $this->changeState->correctState($device, $rotation);
+            }
+        }
+
+        return new JsonResponse($this->deviceModel->getDeviceDto($deviceId));
+    }
+
+    /**
+     * @Route("/move", name="move")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     * @Method("POST")
+     */
+    public function moveblindsbystep(Request $request)
+    {
+        $deviceId = $request->request->get('deviceId', null);
+        $step = $request->request->get('step', null);
+
+        if($request->isMethod(Request::METHOD_POST)){
+            $device = $this->deviceModel->getDevice($deviceId);
+            if(!empty($device)){
+                try{
+                    $this->changeState->moveByStep($device, $step);
+                }catch (\Exception $e){
+                }
             }
         }
 

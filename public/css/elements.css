@@ -56,3 +56,9 @@ section.tile i.icon.state-icon{
     left: 10px;
     top: 10px;
 }
+
+button{
+    background-color: #5eb5e0;
+    border: 0;
+    padding: 10px 40px;
+}

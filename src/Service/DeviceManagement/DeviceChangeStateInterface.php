@@ -8,12 +8,7 @@
 
 namespace App\Service\DeviceManagement;
 
-
-use Psr\Log\LoggerInterface;
-
 interface DeviceChangeStateInterface
 {
-    public function __construct(LoggerInterface $logger);
-
-    public function changeState(int $state, array $pins, int $turns);
+    public function changeState(): void;
 }
