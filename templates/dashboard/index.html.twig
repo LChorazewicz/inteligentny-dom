@@ -20,8 +20,8 @@
 
             <span>{{ device['deviceName'] }}</span>
         </section>
-        <div class="modal" id="modal-device-{{ device['deviceId'] }}">
-            {% if device['deviceType'] == 4 %}
+        {% if device['deviceType'] == 4 %}
+            <div class="modal" id="modal-device-{{ device['deviceId'] }}">
                 <div class="modal-container">
                     <div class="modal-header">
                         <i class="icon icon-close modal-close" onclick="Application.closeModal('modal-device-' + {{ device['deviceId'] }})"></i>
@@ -33,13 +33,26 @@
 
                         <label for="move-{{ device['deviceId'] }}">Roll up/down blinds</label>
                         <button id="changeState" onclick="let application = new Application(); application.changeState({{ device['deviceId'] }})">Roll up</button>
+
+                        <div>
+                            <br><span>Tap tap tap</span><br><br>
+                            <button onclick="let application = new Application(); let percent = (10 / 100) * {{ device['turns'] }}; application.moveBlinds({{ device['deviceId'] }}, percent)">10%</button>
+                            <button onclick="let application = new Application(); let percent = (20 / 100) * {{ device['turns'] }}; application.moveBlinds({{ device['deviceId'] }}, percent)">20%</button>
+                            <button onclick="let application = new Application(); let percent = (30 / 100) * {{ device['turns'] }}; application.moveBlinds({{ device['deviceId'] }}, percent)">30%</button>
+                            <button onclick="let application = new Application(); let percent = (40 / 100) * {{ device['turns'] }}; application.moveBlinds({{ device['deviceId'] }}, percent)">40%</button>
+                            <button onclick="let application = new Application(); let percent = (50 / 100) * {{ device['turns'] }}; application.moveBlinds({{ device['deviceId'] }}, percent)">50%</button>
+                            <button onclick="let application = new Application(); let percent = (60 / 100) * {{ device['turns'] }}; application.moveBlinds({{ device['deviceId'] }}, percent)">60%</button>
+                            <button onclick="let application = new Application(); let percent = (70 / 100) * {{ device['turns'] }}; application.moveBlinds({{ device['deviceId'] }}, percent)">70%</button>
+                            <button onclick="let application = new Application(); let percent = (80 / 100) * {{ device['turns'] }}; application.moveBlinds({{ device['deviceId'] }}, percent)">80%</button>
+                            <button onclick="let application = new Application(); let percent = (90 / 100) * {{ device['turns'] }}; application.moveBlinds({{ device['deviceId'] }}, percent)">90%</button>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button class="modal-close" onclick="Application.closeModal('modal-device-' + {{ device['deviceId'] }})">Close</button>
                     </div>
                 </div>
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
     {% endfor %}
 {% endblock %}
 {% block javascripts %}
