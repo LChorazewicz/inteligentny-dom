@@ -7,42 +7,9 @@
         <section onclick="
                 let application = new Application();
                 application.openModalForDevice('modal-device', {{ device['deviceId'] }})"
-                 class="tile bg-color-light-blue w-250" id="device-{{ device['deviceId'] }}">
-            <i class="icon state-icon
-                {% if(device['state'] == 1) %}
-                    icon-locked
-                {% elseif(device['state'] == 2) %}
-                    icon-unlocked
-                {% elseif(device['state'] == 3) %}
-                    icon-turned-on
-                {% elseif(device['state'] == 4) %}
-                    icon-turned-off
-                {% elseif(device['state'] == 5) %}
-                    icon-rolled-up
-                    {% if(device['openDegree'] >= 1 and device['openDegree'] <= 10) %}
-                        icon-rolled-up-10
-                    {% elseif(device['openDegree'] >= 11 and device['openDegree'] <= 20) %}
-                        icon-rolled-up-20
-                    {% elseif(device['openDegree'] >= 21 and device['openDegree'] <= 30) %}
-                        icon-rolled-up-30
-                    {% elseif(device['openDegree'] >= 31 and device['openDegree'] <= 40) %}
-                        icon-rolled-up-40
-                    {% elseif(device['openDegree'] >= 41 and device['openDegree'] <= 50) %}
-                        icon-rolled-up-50
-                    {% elseif(device['openDegree'] >= 51 and device['openDegree'] <= 60) %}
-                        icon-rolled-up-60
-                    {% elseif(device['openDegree'] >= 61 and device['openDegree'] <= 70) %}
-                        icon-rolled-up-70
-                    {% elseif(device['openDegree'] >= 71 and device['openDegree'] <= 80) %}
-                        icon-rolled-up-80
-                    {% elseif(device['openDegree'] >= 81 and device['openDegree'] <= 90) %}
-                        icon-rolled-up-90
-                    {% elseif(device['openDegree'] >= 91 and device['openDegree'] <= 100) %}
-                        icon-rolled-up-100
-                    {% endif %}
-                {% elseif(device['state'] == 6) %}
-                    icon-rolled-down
-                {% endif %}"></i>
+                 class="tile bg-color-light-blue w-250" id="device-{{ device['deviceId'] }}" onload="
+                    let application = new Application(); application.initTiles({{ device['deviceId'] }})">
+            <i class="icon state-icon"></i>
             <i class="icon icon-status-working"></i>
 
             <span>{{ device['deviceName'] }}</span>
@@ -53,10 +20,11 @@
                     <i class="icon icon-close modal-close" onclick="Application.closeModal('modal-device-' + {{ device['deviceId'] }})"></i>
                 </div>
                 <div class="modal-content">
-                    <label for="move-{{ device['deviceId'] }}">Move</label><br>
+                    <label for="move-{{ device['deviceId'] }}">Move blinds by slider</label><br>
                     <input type="range" min="0" max="100" value="50" class="slider" id="move-{{ device['deviceId'] }}">
-                    <button onclick="let app = new Application(); app.moveBlinds({{ device['deviceId'] }}, $('#move-{{ device['deviceId'] }}').val())">Move</button><br>
+                    <button onclick="let app = new Application(); app.moveBlinds({{ device['deviceId'] }}, $('#move-{{ device['deviceId'] }}').val())">Move</button><br><br>
 
+                    <label for="move-{{ device['deviceId'] }}">Roll up/down blinds</label>
                     <button id="changeState" onclick="let application = new Application(); application.changeState({{ device['deviceId'] }})">Roll up</button>
                 </div>
                 <div class="modal-footer">

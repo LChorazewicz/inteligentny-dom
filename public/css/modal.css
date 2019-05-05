@@ -1,19 +1,20 @@
 .modal{
     display: none;
-    min-width: 900px;
-    min-height: 300px;
+    max-width: 900px;
+    max-height: 313px;
     padding: 10px 5px;
-    position: fixed;
     background-color: #c4c4c4;
     top: 25%;
-    left: 25%;
     z-index: 1;
-    opacity: .8;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: auto;
 }
 
 .modal-container{
-    width: 900px;
-    height: 300px;
+    max-width: 900px;
+    max-height: 300px;
 }
 
 .modal-header{
