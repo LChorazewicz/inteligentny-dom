@@ -46,11 +46,9 @@ class Application {
      * @desc modalId = modal-device-10, data = device dto
      */
     updateModal(modalId, data){
-        console.log('wszedłem', data);
         switch (data.deviceType) {
             case 4:{
                 let slider = $('#' + modalId + ' #move-' + data.deviceId);
-                // slider.attr('value', data.currentTurn !== null ? data.currentTurn : 0);
                 slider.val(data.currentTurn !== null ? parseInt(data.currentTurn) : 0);
                 slider.attr('max', data.turns);
 
@@ -58,10 +56,10 @@ class Application {
                 changeState.text(data.state === 5 ? "Roll down" : "Roll up");
             }
         }
-        this.initTiles(data.deviceId)
+        this.initTile(data.deviceId)
     }
 
-    initTiles(deviceId, data){
+    initTile(deviceId){
         this.getDeviceInfo(deviceId, function (data) {
             switch (data.state) {
                 case 1:{//locked

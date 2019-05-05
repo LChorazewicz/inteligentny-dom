@@ -5,32 +5,40 @@
 {% block body %}
     {% for device in devices %}
         <section onclick="
-                let application = new Application();
-                application.openModalForDevice('modal-device', {{ device['deviceId'] }})"
-                 class="tile bg-color-light-blue w-250" id="device-{{ device['deviceId'] }}" onload="
-                    let application = new Application(); application.initTiles({{ device['deviceId'] }})">
+                let deviceType = {{ device['deviceType'] }};
+                if(deviceType === 4){
+                    let application = new Application();
+                    application.openModalForDevice('modal-device', {{ device['deviceId'] }});
+                }
+                if(deviceType === 1 || deviceType === 3){
+                    let application = new Application();
+                    application.changeState({{ device['deviceId'] }});
+                }" class="tile bg-color-light-blue w-250" id="device-{{ device['deviceId'] }}" onload="
+                    let application = new Application(); application.initTile({{ device['deviceId'] }})">
             <i class="icon state-icon"></i>
             <i class="icon icon-status-working"></i>
 
             <span>{{ device['deviceName'] }}</span>
         </section>
         <div class="modal" id="modal-device-{{ device['deviceId'] }}">
-            <div class="modal-container">
-                <div class="modal-header">
-                    <i class="icon icon-close modal-close" onclick="Application.closeModal('modal-device-' + {{ device['deviceId'] }})"></i>
-                </div>
-                <div class="modal-content">
-                    <label for="move-{{ device['deviceId'] }}">Move blinds by slider</label><br>
-                    <input type="range" min="0" max="100" value="50" class="slider" id="move-{{ device['deviceId'] }}">
-                    <button onclick="let app = new Application(); app.moveBlinds({{ device['deviceId'] }}, $('#move-{{ device['deviceId'] }}').val())">Move</button><br><br>
+            {% if device['deviceType'] == 4 %}
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <i class="icon icon-close modal-close" onclick="Application.closeModal('modal-device-' + {{ device['deviceId'] }})"></i>
+                    </div>
+                    <div class="modal-content">
+                        <label for="move-{{ device['deviceId'] }}">Move blinds by slider</label><br>
+                        <input type="range" min="0" max="100" value="50" class="slider" id="move-{{ device['deviceId'] }}">
+                        <button onclick="let app = new Application(); app.moveBlinds({{ device['deviceId'] }}, $('#move-{{ device['deviceId'] }}').val())">Move</button><br><br>
 
-                    <label for="move-{{ device['deviceId'] }}">Roll up/down blinds</label>
-                    <button id="changeState" onclick="let application = new Application(); application.changeState({{ device['deviceId'] }})">Roll up</button>
+                        <label for="move-{{ device['deviceId'] }}">Roll up/down blinds</label>
+                        <button id="changeState" onclick="let application = new Application(); application.changeState({{ device['deviceId'] }})">Roll up</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="modal-close" onclick="Application.closeModal('modal-device-' + {{ device['deviceId'] }})">Close</button>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="modal-close" onclick="Application.closeModal('modal-device-' + {{ device['deviceId'] }})">Close</button>
-                </div>
-            </div>
+            {% endif %}
         </div>
     {% endfor %}
 {% endblock %}
