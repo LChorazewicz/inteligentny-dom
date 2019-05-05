@@ -58,6 +58,7 @@ class BlindsTest extends KernelTestCase
      * @param int $deviceTurns
      * @param int $expectedCurrentTurn
      * @param int $expectedState
+     * @param int $direction
      * @param string $message
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -65,11 +66,11 @@ class BlindsTest extends KernelTestCase
      * @dataProvider moveByPercentDataProvider
      */
     public function testMoveByStep(int $deviceState,
-                                      int $deviceCurrentTurn, int $deviceTurns, int $expectedCurrentTurn, int $expectedState, string $message)
+                                      int $deviceCurrentTurn, int $deviceTurns, int $expectedCurrentTurn, int $expectedState, int $direction, string $message)
     {
         $blinds = new Device();
         $blinds
-            ->setDeviceDirection(DeviceDirection::LEFT)
+            ->setDeviceDirection($direction)
             ->setState($deviceState)
             ->setCurrentTurn($deviceCurrentTurn)
             ->setTurns($deviceTurns)
@@ -102,58 +103,110 @@ class BlindsTest extends KernelTestCase
     {
         return [
 
-            [ StateType::BLINDS_ROLLED_UP, 10, 10, 1, StateType::BLINDS_ROLLED_UP, 'case #1'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 10, 2, StateType::BLINDS_ROLLED_UP, 'case #2'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 10, 3, StateType::BLINDS_ROLLED_UP, 'case #3'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 10, 4, StateType::BLINDS_ROLLED_UP, 'case #4'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 10, 5, StateType::BLINDS_ROLLED_UP, 'case #5'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 10, 6, StateType::BLINDS_ROLLED_UP, 'case #6'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 10, 7, StateType::BLINDS_ROLLED_UP, 'case #7'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 10, 8, StateType::BLINDS_ROLLED_UP, 'case #8'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 10, 9, StateType::BLINDS_ROLLED_UP, 'case #9'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 10, 10, StateType::BLINDS_ROLLED_UP, 'case #10'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 1, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #1'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 2, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #2'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 3, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #3'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 4, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #4'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 5, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #5'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 6, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #6'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 7, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #7'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 8, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #8'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 9, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #9'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 10, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #10'],
 
-            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 0, StateType::BLINDS_ROLLED_DOWN, 'case #11'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 1, StateType::BLINDS_ROLLED_UP, 'case #12'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 2, StateType::BLINDS_ROLLED_UP, 'case #13'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 3, StateType::BLINDS_ROLLED_UP, 'case #14'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 4, StateType::BLINDS_ROLLED_UP, 'case #15'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 5, StateType::BLINDS_ROLLED_UP, 'case #16'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 6, StateType::BLINDS_ROLLED_UP, 'case #17'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 7, StateType::BLINDS_ROLLED_UP, 'case #18'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 8, StateType::BLINDS_ROLLED_UP, 'case #19'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 9, StateType::BLINDS_ROLLED_UP, 'case #20'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 10, StateType::BLINDS_ROLLED_UP, 'case #21'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 0, StateType::BLINDS_ROLLED_DOWN, DeviceDirection::LEFT, 'case #11'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 1, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #12'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 2, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #13'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 3, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #14'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 4, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #15'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 5, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #16'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 6, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #17'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 7, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #18'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 8, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #19'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 9, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #20'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 10, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #21'],
 
-            [ StateType::BLINDS_ROLLED_UP, 10, 10, 0, StateType::BLINDS_ROLLED_DOWN, 'case #22'],
-            [ StateType::BLINDS_ROLLED_UP, 1, 10, 0, StateType::BLINDS_ROLLED_DOWN, 'case #23'],
-//----------------------------------------------------------------------------------------------------------------------
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 0, StateType::BLINDS_ROLLED_DOWN, DeviceDirection::LEFT, 'case #22'],
+            [ StateType::BLINDS_ROLLED_UP, 1, 10, 0, StateType::BLINDS_ROLLED_DOWN, DeviceDirection::LEFT, 'case #23'],
 
-            [ StateType::BLINDS_ROLLED_UP, 10, 29, 1, StateType::BLINDS_ROLLED_UP, 'case #24'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 29, 2, StateType::BLINDS_ROLLED_UP, 'case #25'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 29, 3, StateType::BLINDS_ROLLED_UP, 'case #26'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 29, 4, StateType::BLINDS_ROLLED_UP, 'case #27'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 29, 5, StateType::BLINDS_ROLLED_UP, 'case #28'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 29, 6, StateType::BLINDS_ROLLED_UP, 'case #29'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 29, 7, StateType::BLINDS_ROLLED_UP, 'case #30'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 29, 8, StateType::BLINDS_ROLLED_UP, 'case #31'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 29, 9, StateType::BLINDS_ROLLED_UP, 'case #32'],
-            [ StateType::BLINDS_ROLLED_UP, 10, 29, 29, StateType::BLINDS_ROLLED_UP, 'case #33'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 1, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #24'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 2, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #25'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 3, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #26'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 4, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #27'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 5, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #28'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 6, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #29'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 7, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #30'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 8, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #31'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 9, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #32'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 29, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #33'],
 
-            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 0, StateType::BLINDS_ROLLED_DOWN, 'case #34'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 1, StateType::BLINDS_ROLLED_UP, 'case #35'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 2, StateType::BLINDS_ROLLED_UP, 'case #36'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 3, StateType::BLINDS_ROLLED_UP, 'case #37'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 4, StateType::BLINDS_ROLLED_UP, 'case #38'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 5, StateType::BLINDS_ROLLED_UP, 'case #39'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 6, StateType::BLINDS_ROLLED_UP, 'case #40'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 7, StateType::BLINDS_ROLLED_UP, 'case #41'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 8, StateType::BLINDS_ROLLED_UP, 'case #42'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 9, StateType::BLINDS_ROLLED_UP, 'case #43'],
-            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 10, StateType::BLINDS_ROLLED_UP, 'case #44'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 0, StateType::BLINDS_ROLLED_DOWN, DeviceDirection::LEFT, 'case #34'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 1, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #35'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 2, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #36'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 3, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #37'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 4, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #38'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 5, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #39'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 6, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #40'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 7, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #41'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 8, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #42'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 9, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #43'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 10, StateType::BLINDS_ROLLED_UP, DeviceDirection::LEFT, 'case #44'],
 
-            [ StateType::BLINDS_ROLLED_UP, 10, 29, 0, StateType::BLINDS_ROLLED_DOWN, 'case #45'],
-            [ StateType::BLINDS_ROLLED_UP, 1, 29, 0, StateType::BLINDS_ROLLED_DOWN, 'case #46'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 0, StateType::BLINDS_ROLLED_DOWN, DeviceDirection::LEFT, 'case #45'],
+            [ StateType::BLINDS_ROLLED_UP, 1, 29, 0, StateType::BLINDS_ROLLED_DOWN, DeviceDirection::LEFT, 'case #46'],
+
+            //---------------------------------------------------------------------DeviceDirection::RIGHT---------------
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 1, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #47'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 2, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #48'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 3, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #49'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 4, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #50'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 5, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #51'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 6, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #52'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 7, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #53'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 8, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #54'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 9, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #55'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 10, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #56'],
+
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 0, StateType::BLINDS_ROLLED_DOWN, DeviceDirection::RIGHT, 'case #57'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 1, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #58'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 2, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #59'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 3, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #60'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 4, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #61'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 5, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #62'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 6, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #63'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 7, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #64'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 8, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #65'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 9, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #66'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 10, 10, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #67'],
+
+            [ StateType::BLINDS_ROLLED_UP, 10, 10, 0, StateType::BLINDS_ROLLED_DOWN, DeviceDirection::RIGHT, 'case #68'],
+            [ StateType::BLINDS_ROLLED_UP, 1, 10, 0, StateType::BLINDS_ROLLED_DOWN, DeviceDirection::RIGHT, 'case #69'],
+
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 1, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #70'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 2, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #71'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 3, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #72'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 4, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #73'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 5, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #74'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 6, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #75'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 7, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #76'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 8, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #77'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 9, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #78'],
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 29, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #79'],
+
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 0, StateType::BLINDS_ROLLED_DOWN, DeviceDirection::RIGHT, 'case #80'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 1, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #81'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 2, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #82'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 3, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #83'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 4, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #84'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 5, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #85'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 6, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #86'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 7, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #87'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 8, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #88'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 9, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #89'],
+            [StateType::BLINDS_ROLLED_DOWN, 0, 29, 10, StateType::BLINDS_ROLLED_UP, DeviceDirection::RIGHT, 'case #90'],
+
+            [ StateType::BLINDS_ROLLED_UP, 10, 29, 0, StateType::BLINDS_ROLLED_DOWN, DeviceDirection::RIGHT, 'case #91'],
+            [ StateType::BLINDS_ROLLED_UP, 1, 29, 0, StateType::BLINDS_ROLLED_DOWN, DeviceDirection::RIGHT, 'case #92'],
         ];
     }
 }

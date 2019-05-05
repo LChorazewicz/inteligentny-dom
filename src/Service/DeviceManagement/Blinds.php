@@ -10,6 +10,7 @@ namespace App\Service\DeviceManagement;
 
 
 use App\Entity\Device;
+use App\Model\Device\DeviceDirection;
 use App\Model\Device\StateType;
 use App\Repository\DeviceRepository;
 use Psr\Log\LoggerInterface;
@@ -54,7 +55,17 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
      */
     public function correctState(): void
     {
-        $this->execScript(1, 16, $this->inWhichWay($this->device->getDeviceDirection()), false);
+        $currentTurn = !is_null($this->device->getCurrentTurn()) ? $this->device->getCurrentTurn() : 0;
+        $copyOfCurrentTurn = $currentTurn;
+        if($this->device->getState() === StateType::BLINDS_ROLLED_UP){
+            $turn = $copyOfCurrentTurn += 1;
+        }elseif ($this->device->getState() === StateType::BLINDS_ROLLED_DOWN){
+            $turn = $copyOfCurrentTurn -= 1;
+        }
+
+        $turns = $this->setTurnsForDeviceWithSpecificDirection($turn, $currentTurn, $this->device->getDeviceDirection());
+
+        $this->execScript($turns, 16, false);
     }
 
     /**
@@ -63,11 +74,15 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
      */
     public function changeState(): void
     {
-        $turns = $this->device->getTurns();
+        $deviceTurns = $this->device->getTurns();
         if($this->device->getState() === StateType::BLINDS_ROLLED_UP){
-            $turns = 0;
+            $deviceTurns = 0;
         }
-        $this->execScript($this->setTurns($turns), 256, $this->inWhichWay, true);
+
+        $currentTurn = !is_null($this->device->getCurrentTurn()) ? $this->device->getCurrentTurn() : 0;
+        $turns = $this->setTurnsForDeviceWithSpecificDirection($deviceTurns, $currentTurn, $this->device->getDeviceDirection());
+
+        $this->execScript($turns, 256, true);
     }
 
     /**
@@ -78,23 +93,24 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
      */
     public function moveByStep(int $step)
     {
-        $this->execScript($this->setTurns($step), 256, $this->inWhichWay, true);
+        $currentTurn = !is_null($this->device->getCurrentTurn()) ? $this->device->getCurrentTurn() : 0;
+        $turns = $this->setTurnsForDeviceWithSpecificDirection($step, $currentTurn, $this->device->getDeviceDirection());
+        $this->execScript($turns, 256, true);
     }
 
     /**
      * @param int $turns
      * @param int $engineStepsPerCicle
-     * @param int $whichWay
      * @param bool $updataData
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    private function execScript(int $turns, int $engineStepsPerCicle, int $whichWay, bool $updataData)
+    private function execScript(int $turns, int $engineStepsPerCicle, bool $updataData)
     {
         $outputState = null;
         $pins = $this->getPinsForPythonScript($this->device->getPins());
         $previousState = $this->device->getState();
-        $command = "cd " . dirname(__DIR__) . "/../Scripts && python motor.py " . $pins . " " . $whichWay . " " . $engineStepsPerCicle;
+        $command = "cd " . dirname(__DIR__) . "/../Scripts && python motor.py " . $pins . " " . $this->inWhichWay . " " . $engineStepsPerCicle;
         $this->logger->info("Change motor state in progress", ['state' => $previousState, 'pins' => $pins, 'turns' => $turns, 'command' => $command]);
 
         switch ($previousState){
@@ -104,7 +120,7 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
                     $outputState = !GPIO_MOCK ? exec($command) : 1;
 
                     if($updataData){
-                        $this->device->setCurrentTurn($this->addOrMinusAndGetStep($whichWay));
+                        $this->device->setCurrentTurn($this->addOrMinusAndGetStep($this->inWhichWay));
                     }
                 }
                 $this->updateState();
@@ -122,19 +138,55 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
         }
     }
 
-    private function setTurns(int $turn): int
+    private function setTurnsForDeviceWithSpecificDirection(int $turn, int $currentTurn, int $deviceDirection): int
     {
         $return = 0;
-        $currentTurn = $this->device->getCurrentTurn();
+        $this->inWhichWay = self::ENGINE_TURN_DOWN;
+
         if($turn > $currentTurn){
             $return = $turn - $currentTurn;
-            $this->inWhichWay = self::ENGINE_TURN_UP;
-        }elseif($turn < $this->device->getCurrentTurn()){
+        }elseif($turn <$currentTurn){
             $return = $currentTurn - $turn;
-            $this->inWhichWay = self::ENGINE_TURN_DOWN;
-        }else{
-            $this->inWhichWay = self::ENGINE_TURN_DOWN;
         }
+
+        switch ($deviceDirection){
+            case DeviceDirection::LEFT:{
+                if($turn > $currentTurn){
+                    $this->inWhichWay = self::ENGINE_TURN_UP;
+                }elseif($turn <$currentTurn){
+                    $this->inWhichWay = self::ENGINE_TURN_DOWN;
+                }
+                break;
+            }
+
+            case DeviceDirection::RIGHT:{
+                if($turn > $currentTurn){
+                    $this->inWhichWay = self::ENGINE_TURN_DOWN;
+                }elseif($turn <$currentTurn){
+                    $this->inWhichWay = self::ENGINE_TURN_UP;
+                }
+                break;
+            }
+
+            case DeviceDirection::UPSIDE_DOWN_LEFT:{
+                if($turn > $currentTurn){
+                    $this->inWhichWay = self::ENGINE_TURN_UP;
+                }elseif($turn <$currentTurn){
+                    $this->inWhichWay = self::ENGINE_TURN_DOWN;
+                }
+                break;
+            }
+
+            case DeviceDirection::UPSIDE_DOWN_RIGHT:{
+                if($turn > $currentTurn){
+                    $this->inWhichWay = self::ENGINE_TURN_UP;
+                }elseif($turn <$currentTurn){
+                    $this->inWhichWay = self::ENGINE_TURN_DOWN;
+                }
+                break;
+            }
+        }
+
 
         return $return;
     }
@@ -142,16 +194,33 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
     private function addOrMinusAndGetStep(int $whichWay): int
     {
         $result = 0;
-        switch ($whichWay){
-            case self::ENGINE_TURN_UP:{
-                $result = $this->device->getCurrentTurn() + 1;
+        switch ($this->device->getDeviceDirection()){
+            case DeviceDirection::LEFT:{
+                if($whichWay === self::ENGINE_TURN_UP){
+                    $result = $this->device->getCurrentTurn() + 1;
+                }elseif($whichWay === self::ENGINE_TURN_DOWN){
+                    $result = $this->device->getCurrentTurn() - 1;
+                }
                 break;
             }
-            case self::ENGINE_TURN_DOWN:{
-                $result = $this->device->getCurrentTurn() - 1;
+            case DeviceDirection::RIGHT:{
+                if($whichWay === self::ENGINE_TURN_UP){
+                    $result = $this->device->getCurrentTurn() - 1;
+                }elseif($whichWay === self::ENGINE_TURN_DOWN){
+                    $result = $this->device->getCurrentTurn() + 1;
+                }
+                break;
+            }
+
+            case DeviceDirection::UPSIDE_DOWN_LEFT:{
+                break;
+            }
+
+            case DeviceDirection::UPSIDE_DOWN_RIGHT:{
                 break;
             }
         }
+
         return $result;
     }
 
