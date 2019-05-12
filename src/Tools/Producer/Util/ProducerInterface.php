@@ -6,7 +6,7 @@
  * Time: 19:58
  */
 
-namespace App\Service\Producers\Util;
+namespace App\Tools\Producer\Util;
 
 
 use PhpAmqpLib\Message\AMQPMessage;

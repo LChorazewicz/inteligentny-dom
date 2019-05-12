@@ -14,7 +14,7 @@ class AppInstallCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Create/refresh app config - run with sudo privileges')
+            ->setDescription('Create app config - run with sudo privileges')
         ;
     }
 
@@ -26,9 +26,10 @@ class AppInstallCommand extends Command
 
         if ($env && $supervisiorDir) {
             try{
-                $io->write($this->clearLogs());
-                $this->updateSupervisiorConfigFiles($supervisiorDir);
-                $io->write($this->supervisorRestart());
+                $io->block($this->clearLogs());
+                $io->block($this->updateSupervisiorConfigFiles($supervisiorDir));
+                $io->block($this->supervisorRestart());
+                $io->block($this->addPermissions());
                 $io->success('Installed!');
             }catch (\Throwable $throwable){
                 $io->error($throwable->getMessage());
@@ -37,7 +38,7 @@ class AppInstallCommand extends Command
 
     }
 
-    private function updateSupervisiorConfigFiles(string $supervisorDir): void
+    private function updateSupervisiorConfigFiles(string $supervisorDir): string
     {
         //todo: from db, current dir
         $consummers = [
@@ -45,6 +46,7 @@ class AppInstallCommand extends Command
         ];
 
         $projectDir = $_ENV['PROJECT_DIR'];
+        $msg = '';
         foreach ($consummers as $consummer){
             $name = $consummer['name'];
             $quantity = $consummer['quantity'];
@@ -59,10 +61,14 @@ process_name=$name-%(process_num)s
 stderr_logfile=$projectDir/var/log/supervisor.log
 HEREDOC;
                 file_put_contents($supervisorDir . $name . '.conf', $configContent);
+                $msg = 'config added to ' . $supervisorDir . $name . '.conf';
             }elseif($consummer['status'] === 0){
                 unlink($supervisorDir . $name . '.conf');
+                $msg = 'config removed from ' . $supervisorDir . $name . '.conf';
             }
         }
+
+        return $msg;
     }
 
     private function clearLogs(): string
@@ -72,11 +78,19 @@ HEREDOC;
         if(is_dir($logDir)){
             $msg = exec("rm -rf $logDir/*");
         }
-        return $msg;
+        return !empty($msg) ? $msg : 'Log directory cleared';
     }
 
     private function supervisorRestart(): string
     {
-        return exec('service supervisor restart');
+        $msg = exec('service supervisor restart');
+        return !empty($msg) ? $msg : 'Supervisor service restated';
+    }
+
+    private function addPermissions()
+    {
+        $projectDir = $_ENV['PROJECT_DIR'];
+        $msg = exec('chmod 777 ' . $projectDir . '/var/* && chown www-data:www-data ' . $projectDir . '/var/* -R');
+        return !empty($msg) ? $msg : 'Permissions added to ' . $projectDir . '/var/*';
     }
 }

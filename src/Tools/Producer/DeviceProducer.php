@@ -6,11 +6,11 @@
  * Time: 19:32
  */
 
-namespace App\Service\Producers;
+namespace App\Tools\Producer;
 
 
-use App\Service\Producers\Util\ProducerAbstract;
-use App\Service\Producers\Util\ProducerInterface;
+use App\Tools\Producer\Util\ProducerAbstract;
+use App\Tools\Producer\Util\ProducerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class DeviceProducer extends ProducerAbstract implements ProducerInterface

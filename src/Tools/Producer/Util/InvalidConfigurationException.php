@@ -6,7 +6,7 @@
  * Time: 20:06
  */
 
-namespace App\Service\Producers\Util;
+namespace App\Tools\Producer\Util;
 
 
 class InvalidConfigurationException extends \Exception

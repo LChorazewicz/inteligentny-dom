@@ -2,9 +2,8 @@
 
 namespace App\Controller;
 
-use App\Consumer\Device;
 use App\Service\DeviceManagement\ChangeState;
-use App\Service\Producers\DeviceProducer;
+use App\Tools\Producer\DeviceProducer;
 use App\Tools\Logger;
 use PhpAmqpLib\Message\AMQPMessage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
