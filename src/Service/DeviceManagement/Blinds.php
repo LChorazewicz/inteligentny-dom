@@ -114,6 +114,7 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
     private function execScript(int $turns, int $engineStepsPerCicle, bool $updataData)
     {
         $outputState = null;
+        $gpioMock = isset($_ENV['GPIO_MOCK']) && $_ENV['GPIO_MOCK'] == true;
         $pins = $this->getPinsForPythonScript($this->device->getPins());
         $previousState = $this->device->getState();
         $command = "cd " . dirname(__DIR__) . "/../Scripts && python motor.py " . $pins . " " . $this->inWhichWay . " " . $engineStepsPerCicle;
@@ -121,7 +122,7 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
         Logger::getLogger('service/device', Logger::INFO, 'blinds')->info(
             'Change motor state in progress',
             ['state' => $previousState, 'pins' => $pins, 'turns' => $turns, 'command' => $command,
-                'GPIO_MOCK' => $_ENV['GPIO_MOCK'], 'update_data' => $updataData]
+                'GPIO_MOCK' => $gpioMock, 'update_data' => $updataData]
         );
 
         switch ($previousState){
@@ -131,7 +132,7 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
                     $this->updateState();
 
                     $outputState = null;
-                    if(isset($_ENV['GPIO_MOCK']) && $_ENV['GPIO_MOCK'] == true){
+                    if($gpioMock){
                         $outputState = 1;
                         Logger::getLogger('service/device', Logger::INFO, 'blinds')->info('output state mock', ['output' => $outputState]);
                     }else{
@@ -158,7 +159,7 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
 
         $this->logger->info('response status', ['output' => $outputState]);
         Logger::getLogger('service/device', Logger::INFO, 'blinds')->info('response status', ['output' => $outputState]);
-        if(($_ENV['GPIO_MOCK'] && $updataData) || ($updataData && $outputState == 1)){
+        if(($gpioMock && $updataData) || ($updataData && $outputState == 1)){
             $this->deviceRepository->update($this->device);
         }
     }
