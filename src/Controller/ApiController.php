@@ -135,11 +135,11 @@ class ApiController extends AbstractController
                 try{
                     $message = new AMQPMessage();
                     $message->setBody(json_encode(['device_id' => $deviceId, 'step' => $step]));
-//                    $deviceProducer->publish($message);
-//                    $deviceProducer->disconnect();
-
-                    $consumer = new Device($this->deviceModel, $this->changeState);
-                    $consumer->execute($message);
+                    $deviceProducer->publish($message);
+                    $deviceProducer->disconnect();
+//
+//                    $consumer = new Device($this->deviceModel, $this->changeState);
+//                    $consumer->execute($message);
                 }catch (\Exception $e){
                     $this->logger->error($e->getMessage());
                 }
