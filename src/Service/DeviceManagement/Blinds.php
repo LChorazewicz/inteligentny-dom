@@ -14,6 +14,7 @@ use App\Model\Device\DeviceAction;
 use App\Model\Device\DeviceDirection;
 use App\Model\Device\StateType;
 use App\Repository\DeviceRepository;
+use App\Tools\Logger;
 use Psr\Log\LoggerInterface;
 
 class Blinds extends DeviceAbstract implements CorrectMotorInterface
@@ -96,6 +97,9 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
     {
         $currentTurn = !is_null($this->device->getCurrentTurn()) ? $this->device->getCurrentTurn() : 0;
         $turns = $this->setTurnsForDeviceWithSpecificDirection($step, $currentTurn, $this->device->getDeviceDirection());
+        Logger::getLogger('service/device', Logger::INFO, 'blinds')->info('move-by-step',
+            ['current_turn' => $currentTurn, 'turns' => $turns]
+        );
         $this->execScript($turns, 256, true);
     }
 
@@ -105,6 +109,7 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
      * @param bool $updataData
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Exception
      */
     private function execScript(int $turns, int $engineStepsPerCicle, bool $updataData)
     {
@@ -113,6 +118,10 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
         $previousState = $this->device->getState();
         $command = "cd " . dirname(__DIR__) . "/../Scripts && python motor.py " . $pins . " " . $this->inWhichWay . " " . $engineStepsPerCicle;
         $this->logger->info("Change motor state in progress", ['state' => $previousState, 'pins' => $pins, 'turns' => $turns, 'command' => $command]);
+        Logger::getLogger('service/device', Logger::INFO, 'blinds')->info(
+            'Change motor state in progress',
+            ['state' => $previousState, 'pins' => $pins, 'turns' => $turns, 'command' => $command, 'GPIO_MOCK' => $_ENV['GPIO_MOCK'], 'update_data' => $updataData]
+        );
 
         switch ($previousState){
             case StateType::BLINDS_ROLLED_UP:
@@ -140,7 +149,7 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
         }
 
         $this->logger->info('response status', ['output' => $outputState]);
-
+        Logger::getLogger('service/device', Logger::INFO, 'blinds')->info('response status', ['output' => $outputState]);
         if(($_ENV['GPIO_MOCK'] && $updataData) || ($updataData && $outputState == 1)){
             $this->deviceRepository->update($this->device);
         }

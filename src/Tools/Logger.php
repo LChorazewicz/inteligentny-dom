@@ -84,6 +84,9 @@ class Logger
      */
     private static $logger;
 
+    private function __construct(){}
+    private function __clone(){}
+
     /**
      * @param string $name
      * @param int $level
@@ -93,13 +96,13 @@ class Logger
      */
     public static function getLogger(string $name, int $level, string $channel): \Monolog\Logger
     {
-        self::$path = $GLOBALS['kernel']->getLogDir();
-
         if(self::$logger === null){
+            self::$path = $GLOBALS['kernel']->getLogDir();
             self::$logger = new \Monolog\Logger($channel);
+            $location = self::$path . '/' . 'log' . '.log';
+            self::$logger->pushHandler((new StreamHandler($location, $level))->setFormatter(new JsonFormatter()));
         }
 
-        $location = self::$path . '/' . $name . '.log';
-        return self::$logger->pushHandler((new StreamHandler($location, $level))->setFormatter(new JsonFormatter()));
+        return self::$logger;
     }
 }

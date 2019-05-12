@@ -13,6 +13,7 @@ use App\Entity\Device;
 use App\Model\Device\DeviceType;
 use App\Model\Device\StateType;
 use App\Repository\DeviceRepository;
+use App\Tools\Logger;
 use Psr\Log\LoggerInterface;
 
 class ChangeState
@@ -81,10 +82,10 @@ class ChangeState
 
     /**
      * @param Device $device
-     * @param int $percent
+     * @param int $step
      * @throws \Exception
      */
-    public function moveByStep(Device $device, int $percent)
+    public function moveByStep(Device $device, int $step)
     {
         $result = null;
         switch ($device->getDeviceType()){
@@ -92,7 +93,10 @@ class ChangeState
                 switch ($device->getState()){
                     case StateType::BLINDS_ROLLED_DOWN:
                     case StateType::BLINDS_ROLLED_UP: {
-                        (new Blinds($device, $this->logger, $this->deviceRepository))->moveByStep($percent);
+                        Logger::getLogger('service/device', Logger::INFO, 'service')->info(
+                            'move-by-step', ['device_id' => $device->getId(), '' => $step]
+                        );
+                        (new Blinds($device, $this->logger, $this->deviceRepository))->moveByStep($step);
                         break;
                     }
                 }

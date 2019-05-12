@@ -57,6 +57,10 @@ class Device implements ConsumerInterface
             $deviceId = $body['device_id'];
             $step = $body['step'];
             $device = $this->deviceModel->getDevice($deviceId);
+            Logger::getLogger('consumer/device', Logger::INFO, 'api')->info(
+                'consumer', ['device_id' => $deviceId, 'step' => $step]
+            );
+
             if($device !== null){
                 $this->changeState->moveByStep($device, $step);
             }
