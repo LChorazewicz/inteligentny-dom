@@ -11,6 +11,6 @@ class Endpoint {
     }
 
     static getMoveBlindsEndpoint() {
-        return '/move';
+        return '/api/device/set-rotation';
     }
 }

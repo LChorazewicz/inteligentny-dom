@@ -4,15 +4,21 @@ namespace App\Controller;
 
 use App\Service\DeviceManagement\ChangeState;
 use App\Service\Producers\DeviceProducer;
+use App\Tools\Logger;
 use PhpAmqpLib\Message\AMQPMessage;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-class DashboardController extends AbstractController
+/**
+ * Class ApiController
+ * @package App\Controller
+ * @Route("/api")
+ */
+class ApiController extends AbstractController
 {
+
     /**
      * @var \App\Model\Device\Device
      */
@@ -23,29 +29,31 @@ class DashboardController extends AbstractController
      */
     private $changeState;
 
+    /**
+     * @var \Monolog\Logger
+     */
+    private $logger;
+
+    /**
+     * ApiController constructor.
+     * @param \App\Model\Device\Device $device
+     * @param ChangeState $changeState
+     * @throws \Exception
+     */
     public function __construct(\App\Model\Device\Device $device, ChangeState $changeState)
     {
         $this->deviceModel = $device;
         $this->changeState = $changeState;
-    }
-    /**
-     * @Route("/", name="home")
-     * @Route("/dashboard", name="dashboard")
-     */
-    public function index()
-    {
-        return $this->render('dashboard/index.html.twig', [
-            'devices' => $this->deviceModel->findAllDevicesDto(),
-        ]);
+        $this->logger = Logger::getLogger('api/api', Logger::INFO, 'api');
     }
 
     /**
-     * @Route("/change/state", name="change-state")
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @Route("/device/change-state", name="api-device-change-state")
+     * @return JsonResponse
      * @throws \Exception
      */
-    public function changestate(Request $request)
+    public function changedevicestate(Request $request)
     {
         $deviceId = $request->request->get('deviceId', null);
 
@@ -60,12 +68,12 @@ class DashboardController extends AbstractController
     }
 
     /**
-     * @Route("/correct-rotation", name="correct-rotation")
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return JsonResponse
      * @throws \Exception
+     * @Route("/device/correct-rotation", name="api-device-correct-rotation")
      */
-    public function correcttherotationoftheengine(Request $request)
+    public function correctrotation(Request $request)
     {
         $deviceId = $request->request->get('deviceId', null);
         $rotation = $request->request->get('rotation', null);
@@ -81,13 +89,12 @@ class DashboardController extends AbstractController
     }
 
     /**
-     * @Route("/move", name="move")
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
-     * @Method("POST")
+     * @param DeviceProducer $deviceProducer
+     * @return JsonResponse
+     * @Route("/device/set-rotation", name="api-device-set-rotation")
      */
-    public function moveblindsbystep(Request $request)
+    public function setrotation(Request $request, DeviceProducer $deviceProducer)
     {
         $deviceId = $request->request->get('deviceId', null);
         $step = $request->request->get('step', null);
@@ -96,8 +103,12 @@ class DashboardController extends AbstractController
             $device = $this->deviceModel->getDevice($deviceId);
             if(!empty($device)){
                 try{
-                    $this->changeState->moveByStep($device, $step);
+                    $message = new AMQPMessage();
+                    $message->setBody(json_encode(['device_id' => $deviceId, 'step' => $step]));
+                    $deviceProducer->publish($message);
+                    $deviceProducer->disconnect();
                 }catch (\Exception $e){
+                    $this->logger->error($e->getMessage());
                 }
             }
         }

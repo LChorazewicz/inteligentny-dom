@@ -117,7 +117,7 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
             case StateType::BLINDS_ROLLED_UP:
             case StateType::BLINDS_ROLLED_DOWN:{
                 for($i = 1; $i <= $turns; $i++){
-                    $outputState = !GPIO_MOCK ? exec($command) : 1;
+                    $outputState = !$_ENV['GPIO_MOCK'] ? exec($command) : 1;
 
                     if($updataData){
                         $this->device->setCurrentTurn($this->addOrMinusAndGetStep($this->inWhichWay));
@@ -134,7 +134,7 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
 
         $this->logger->info('response status', ['output' => $outputState]);
 
-        if((GPIO_MOCK && $updataData) || ($updataData && $outputState == 1)){
+        if(($_ENV['GPIO_MOCK'] && $updataData) || ($updataData && $outputState == 1)){
             $this->deviceRepository->update($this->device);
         }
     }

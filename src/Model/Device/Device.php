@@ -10,9 +10,6 @@ namespace App\Model\Device;
 
 
 use App\Repository\DeviceRepository;
-use App\Service\DeviceManagement\Blinds;
-use App\Service\DeviceManagement\Door;
-use App\Service\DeviceManagement\Light;
 use Psr\Log\LoggerInterface;
 
 class Device

@@ -77,7 +77,7 @@ class Door extends DeviceAbstract implements DeviceChangeStateInterface
 
         $this->logger->info('response status', ['output' => $outputState]);
 
-        if((GPIO_MOCK && $outputState == 0) || $outputState == 1){
+        if(($_ENV['GPIO_MOCK'] && $outputState == "") || $outputState == 1){
             $this->deviceRepository->update($this->device);
         }
     }
