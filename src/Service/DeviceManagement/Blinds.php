@@ -128,7 +128,6 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
                         $this->device->setCurrentTurn($nextTurn);
 
                         $this->deviceRepository->update($this->device);
-                        sleep(1);
                     }
                 }
                 $this->device->setCurrentAction(DeviceAction::INACTIVE);
