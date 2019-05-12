@@ -130,7 +130,14 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
                 for($i = 1; $i <= $turns; $i++){
                     $this->updateState();
 
-                    $outputState = !$_ENV['GPIO_MOCK'] ? exec($command) : 1;
+                    $outputState = null;
+                    if(isset($_ENV['GPIO_MOCK']) && $_ENV['GPIO_MOCK'] == true){
+                        $outputState = 1;
+                        Logger::getLogger('service/device', Logger::INFO, 'blinds')->info('output state mock', ['output' => $outputState]);
+                    }else{
+                        $outputState = exec($command);
+                        Logger::getLogger('service/device', Logger::INFO, 'blinds')->info('output state gpio', ['output' => $outputState]);
+                    }
 
                     if($updataData){
                         $nextTurn = $this->addOrMinusAndGetStep($this->inWhichWay);
