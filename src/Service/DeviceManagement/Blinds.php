@@ -114,7 +114,9 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
     private function execScript(int $turns, int $engineStepsPerCicle, bool $updataData)
     {
         $outputState = null;
-        $gpioMock = isset($_ENV['GPIO_MOCK']) && $_ENV['GPIO_MOCK'] == true;
+
+        $gpioMock = isset($_ENV['GPIO_MOCK']) && filter_var($_ENV['GPIO_MOCK'], FILTER_VALIDATE_BOOLEAN);
+
         $pins = $this->getPinsForPythonScript($this->device->getPins());
         $previousState = $this->device->getState();
         $command = "cd " . dirname(__DIR__) . "/../Scripts && python motor.py " . $pins . " " . $this->inWhichWay . " " . $engineStepsPerCicle;

@@ -3,29 +3,26 @@
 namespace App\Command;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class AppInstallApplicationCommand extends Command
+class AppInstallCommand extends Command
 {
-    protected static $defaultName = 'app-install-application';
+    protected static $defaultName = 'app-install';
 
     protected function configure()
     {
         $this
-            ->setDescription('Create app config - run with sudo privileges')
-            ->addArgument('env', InputArgument::REQUIRED, 'Environtment - dev or prod')
-            ->addArgument('supervisor-path', InputArgument::REQUIRED, 'location of supervisor dir /etc/supervisor/conf.d/')
+            ->setDescription('Create/refresh app config - run with sudo privileges')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
-        $env = $input->getArgument('env');
-        $supervisiorDir = $input->getArgument('supervisor-path');
+        $env = $_ENV['APP_ENV'];
+        $supervisiorDir = $_ENV['SUPERVISOR_DIR'];
 
         if ($env && $supervisiorDir) {
             try{
@@ -47,6 +44,7 @@ class AppInstallApplicationCommand extends Command
             ['name' => 'device', 'status' => 1, 'quantity' => 1],
         ];
 
+        $projectDir = $_ENV['PROJECT_DIR'];
         foreach ($consummers as $consummer){
             $name = $consummer['name'];
             $quantity = $consummer['quantity'];
@@ -54,11 +52,11 @@ class AppInstallApplicationCommand extends Command
                 $configContent = <<<HEREDOC
 [program:$name]
 command=php bin/console rabbitmq:consumer $name
-directory=/var/www/homesystem
+directory=$projectDir
 autostart=true
 numprocs=$quantity
 process_name=$name-%(process_num)s
-stderr_logfile=/var/www/homesystem/var/log/supervisor.log
+stderr_logfile=$projectDir/var/log/supervisor.log
 HEREDOC;
                 file_put_contents($supervisorDir . $name . '.conf', $configContent);
             }elseif($consummer['status'] === 0){
