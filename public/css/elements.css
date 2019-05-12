@@ -62,3 +62,10 @@ button{
     border: 0;
     padding: 10px 40px;
 }
+
+p.infobar{
+    top: 5px;
+    right: 29px;
+    position: absolute;
+    color: black;
+}

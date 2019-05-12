@@ -52,6 +52,7 @@ class Device implements ConsumerInterface
     public function execute(AMQPMessage $msg)
     {
         $body = (array)json_decode($msg->getBody());
+
         try{
             $deviceId = $body['device_id'];
             $step = $body['step'];

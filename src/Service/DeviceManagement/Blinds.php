@@ -10,6 +10,7 @@ namespace App\Service\DeviceManagement;
 
 
 use App\Entity\Device;
+use App\Model\Device\DeviceAction;
 use App\Model\Device\DeviceDirection;
 use App\Model\Device\StateType;
 use App\Repository\DeviceRepository;
@@ -117,13 +118,20 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
             case StateType::BLINDS_ROLLED_UP:
             case StateType::BLINDS_ROLLED_DOWN:{
                 for($i = 1; $i <= $turns; $i++){
+                    $this->updateState();
+
                     $outputState = !$_ENV['GPIO_MOCK'] ? exec($command) : 1;
 
                     if($updataData){
-                        $this->device->setCurrentTurn($this->addOrMinusAndGetStep($this->inWhichWay));
+                        $nextTurn = $this->addOrMinusAndGetStep($this->inWhichWay);
+                        $this->device->setCurrentAction($this->specifyCurrentAction($nextTurn));
+                        $this->device->setCurrentTurn($nextTurn);
+
                         $this->deviceRepository->update($this->device);
+                        sleep(1);
                     }
                 }
+                $this->device->setCurrentAction(DeviceAction::INACTIVE);
                 $this->updateState();
                 break;
             }
@@ -234,5 +242,54 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
         if($this->device->getCurrentTurn() === 0){
             $this->device->setState(StateType::BLINDS_ROLLED_DOWN);
         }
+    }
+
+    private function specifyCurrentAction(int $nextTurn)
+    {
+        $return = 0;
+
+        $turn = $nextTurn;
+        $currentTurn = $this->device->getCurrentTurn();
+
+        switch ($this->device->getDeviceDirection()){
+            case DeviceDirection::LEFT:{
+                if($turn > $currentTurn){
+                    $return = DeviceAction::OPENING;
+                }elseif($turn <$currentTurn){
+                    $return = DeviceAction::CLOSING;
+                }
+                break;
+            }
+
+            case DeviceDirection::RIGHT:{
+                if($turn > $currentTurn){
+                    $return = DeviceAction::OPENING;
+                }elseif($turn <$currentTurn){
+                    $return = DeviceAction::CLOSING;
+                }
+                break;
+            }
+
+            case DeviceDirection::UPSIDE_DOWN_LEFT:{
+                if($turn > $currentTurn){
+                    $return = DeviceAction::OPENING;
+                }elseif($turn <$currentTurn){
+                    $return = DeviceAction::CLOSING;
+                }
+                break;
+            }
+
+            case DeviceDirection::UPSIDE_DOWN_RIGHT:{
+                if($turn > $currentTurn){
+                    $return = DeviceAction::OPENING;
+                }elseif($turn <$currentTurn){
+                    $return = DeviceAction::CLOSING;
+                }
+                break;
+            }
+        }
+
+
+        return $return;
     }
 }

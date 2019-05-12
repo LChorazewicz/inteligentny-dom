@@ -106,9 +106,9 @@ class Application {
                     newIcon.className += 'icon';
                     newIcon.className += ' state-icon';
 
-                    if(data.state === 5){
+                    if(data.state === 5 && data.openDegree != null){
                         newIcon.className += ' icon-rolled-up';
-                    }else if(data.state === 6){
+                    }else if(data.state === 6 || data.openDegree == null){
                         newIcon.className += ' icon-rolled-down';
                     }
 
@@ -135,6 +135,17 @@ class Application {
                         classToBeAdded = 'icon-rolled-up-100';
                     }
 
+                    let infobar = parent.find('p.infobar');
+                    if(data.currentAction === 1){
+                        infobar.text('Opening');
+                    }else if(data.currentAction === 2){
+                        infobar.text('Closing');
+                    }else if(data.currentAction === 3){
+                        infobar.text('Inactive');
+                    }else{
+                        infobar.text('Inactive');
+                    }
+
                     newIcon.className += ' ' + classToBeAdded;
                     parent.append(newIcon);
                     break;
@@ -145,7 +156,7 @@ class Application {
     moveBlinds(deviceId, step){
         let context = this;
         $.ajax({
-            url: Endpoint.getMoveBlindsEndpoint(),
+            url: Endpoint.getMoveStepBlindsEndpoint(),
             method: "POST",
             data: {
                 deviceId: deviceId,
@@ -173,5 +184,20 @@ class Application {
 
     static closeModal(modalId, deviceId){
         $("#" + modalId).hide();
+    }
+
+    moveBlindsByPercent(deviceId, percent) {
+        let context = this;
+        $.ajax({
+            url: Endpoint.getMovePercentBlindsEndpoint(),
+            method: "POST",
+            data: {
+                deviceId: deviceId,
+                percent: percent
+            }
+        }).done(function(response) {
+            console.log("step: " + step, response);
+            context.updateModal('modal-device-' + deviceId, response);
+        });
     }
 }

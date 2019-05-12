@@ -65,6 +65,7 @@ class Device
         $deviceDto->currentTurn = empty($device->getTurns()) ? null : $device->getCurrentTurn();
         $deviceDto->deviceDirection = $device->getDeviceDirection();
         $deviceDto->deviceDirectionName = $this->mapDeviceDirection($device->getDeviceDirection());
+        $deviceDto->currentAction = $device->getCurrentAction();
         $deviceDto->status = $device->getStatus();
         if($deviceDto->currentTurn != null && $deviceDto->turns != null){
             $deviceDto->openDegree = $deviceDto->currentTurn / $deviceDto->turns * 100;

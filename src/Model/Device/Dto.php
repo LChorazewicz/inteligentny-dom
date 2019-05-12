@@ -24,4 +24,5 @@ class Dto
     public $deviceDirection;
     public $deviceDirectionName;
     public $openDegree;
+    public $currentAction;
 }

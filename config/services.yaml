@@ -25,7 +25,3 @@ services:
 
     App\Consumer\Device:
         class: App\Consumer\Device
-        arguments: ['@App\Model\Device\Device', '@App\Service\DeviceManagement\ChangeState', '@monolog.logger.consumer']
-
-    json_formatter:
-        class: Monolog\Formatter\JsonFormatter

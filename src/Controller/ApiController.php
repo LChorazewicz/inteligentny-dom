@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Consumer\Device;
 use App\Service\DeviceManagement\ChangeState;
 use App\Service\Producers\DeviceProducer;
 use App\Tools\Logger;
@@ -92,7 +93,7 @@ class ApiController extends AbstractController
      * @param Request $request
      * @param DeviceProducer $deviceProducer
      * @return JsonResponse
-     * @Route("/device/set-rotation", name="api-device-set-rotation")
+     * @Route("/device/set-step-rotation", name="api-device-set-step-rotation")
      */
     public function setrotation(Request $request, DeviceProducer $deviceProducer)
     {
@@ -102,6 +103,35 @@ class ApiController extends AbstractController
         if($request->isMethod(Request::METHOD_POST)){
             $device = $this->deviceModel->getDevice($deviceId);
             if(!empty($device)){
+                try{
+                    $message = new AMQPMessage();
+                    $message->setBody(json_encode(['device_id' => $deviceId, 'step' => $step]));
+                    $deviceProducer->publish($message);
+                    $deviceProducer->disconnect();
+                }catch (\Exception $e){
+                    $this->logger->error($e->getMessage());
+                }
+            }
+        }
+
+        return new JsonResponse($this->deviceModel->getDeviceDto($deviceId));
+    }
+
+    /**
+     * @param Request $request
+     * @param DeviceProducer $deviceProducer
+     * @return JsonResponse
+     * @Route("/device/set-percent-rotation", name="api-device-set-percent-rotation")
+     */
+    public function setpercentrotation(Request $request, DeviceProducer $deviceProducer)
+    {
+        $deviceId = $request->request->get('deviceId', null);
+        $percent = $request->request->get('percent', null);
+
+        if($request->isMethod(Request::METHOD_POST)){
+            $device = $this->deviceModel->getDevice($deviceId);
+            $step = $percent / 100 * $device->getTurns();
+            if(!empty($device) && $step >= 0 && $step <= 100){
                 try{
                     $message = new AMQPMessage();
                     $message->setBody(json_encode(['device_id' => $deviceId, 'step' => $step]));

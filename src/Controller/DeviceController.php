@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Device;
+use App\Model\Device\DeviceAction;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -66,6 +67,7 @@ class DeviceController extends AbstractController
             $device->setDeviceDirection($request->request->getInt("direction", null));
             $pins = $request->request->get("pins", []);
             $device->setPins(explode(',', $pins));
+            $device->setCurrentAction(DeviceAction::INACTIVE);
             $this->deviceModel->addDevice($device);
             return $this->redirectToRoute('device_index');
         }
@@ -108,6 +110,7 @@ class DeviceController extends AbstractController
                 $deviceToEdit->setDeviceDirection($request->request->getInt("direction", $deviceToEdit->getDeviceDirection()));
                 $pins = $request->request->get("pins", $deviceToEdit->getPins());
                 $deviceToEdit->setPins(explode(',', $pins));
+                $deviceToEdit->setCurrentAction(DeviceAction::INACTIVE);
                 $this->deviceModel->addDevice($deviceToEdit);
             }
 
