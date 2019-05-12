@@ -10,6 +10,7 @@ namespace App\Tools;
 
 
 use Monolog\Formatter\JsonFormatter;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 
 class Logger
@@ -100,7 +101,7 @@ class Logger
             self::$path = $GLOBALS['kernel']->getLogDir();
             self::$logger = new \Monolog\Logger($channel);
             $location = self::$path . '/' . 'log' . '.log';
-            self::$logger->pushHandler((new StreamHandler($location, $level))->setFormatter(new JsonFormatter()));
+            self::$logger->pushHandler((new StreamHandler($location, $level))->setFormatter(new LineFormatter()));
         }
 
         return self::$logger;

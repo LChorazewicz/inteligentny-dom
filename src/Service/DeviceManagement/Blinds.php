@@ -120,7 +120,8 @@ class Blinds extends DeviceAbstract implements CorrectMotorInterface
         $this->logger->info("Change motor state in progress", ['state' => $previousState, 'pins' => $pins, 'turns' => $turns, 'command' => $command]);
         Logger::getLogger('service/device', Logger::INFO, 'blinds')->info(
             'Change motor state in progress',
-            ['state' => $previousState, 'pins' => $pins, 'turns' => $turns, 'command' => $command, 'GPIO_MOCK' => $_ENV['GPIO_MOCK'], 'update_data' => $updataData]
+            ['state' => $previousState, 'pins' => $pins, 'turns' => $turns, 'command' => $command,
+                'GPIO_MOCK' => $_ENV['GPIO_MOCK'], 'update_data' => $updataData]
         );
 
         switch ($previousState){

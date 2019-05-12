@@ -94,7 +94,7 @@ class ChangeState
                     case StateType::BLINDS_ROLLED_DOWN:
                     case StateType::BLINDS_ROLLED_UP: {
                         Logger::getLogger('service/device', Logger::INFO, 'service')->info(
-                            'move-by-step', ['device_id' => $device->getId(), '' => $step]
+                            'move-by-step', ['device_id' => $device->getId(), 'step' => $step]
                         );
                         (new Blinds($device, $this->logger, $this->deviceRepository))->moveByStep($step);
                         break;
