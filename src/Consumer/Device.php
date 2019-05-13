@@ -11,11 +11,13 @@ namespace App\Consumer;
 
 use App\Service\DeviceManagement\ChangeState;
 use App\Tools\Logger;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerInterface;
 
-class Device implements ConsumerInterface
+class Device extends ConsumerAbstract implements ConsumerInterface
 {
     /**
      * @var \App\Model\Device\Device
@@ -33,16 +35,23 @@ class Device implements ConsumerInterface
     private $logger;
 
     /**
+     * @var EntityManager
+     */
+    private $entityManager;
+
+    /**
      * ApiController constructor.
      * @param \App\Model\Device\Device $device
      * @param ChangeState $changeState
+     * @param EntityManagerInterface $manager
      * @throws \Exception
      */
-    public function __construct(\App\Model\Device\Device $device, ChangeState $changeState)
+    public function __construct(\App\Model\Device\Device $device, ChangeState $changeState, EntityManagerInterface $manager)
     {
         $this->deviceModel = $device;
         $this->changeState = $changeState;
         $this->logger = Logger::getLogger('consumer/device', Logger::INFO, 'consumer');
+        $this->entityManager = $manager;
     }
 
     /**
@@ -51,6 +60,8 @@ class Device implements ConsumerInterface
      */
     public function execute(AMQPMessage $msg)
     {
+        parent::check($this->entityManager);
+
         $body = (array)json_decode($msg->getBody());
 
         try{
