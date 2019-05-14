@@ -53,9 +53,12 @@ class AppInstallCommand extends Command
             if($consummer['status'] === 1){
                 $configContent = <<<HEREDOC
 [program:$name]
-command=php bin/console rabbitmq:consumer $name
+command=php bin/console rabbitmq:consumer -m 100 $name
 directory=$projectDir
 autostart=true
+autorestart=true
+startretries=5
+startsecs=0
 numprocs=$quantity
 process_name=$name-%(process_num)s
 stderr_logfile=$projectDir/var/log/supervisor.log
