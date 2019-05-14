@@ -35,23 +35,16 @@ class Device extends ConsumerAbstract implements ConsumerInterface
     private $logger;
 
     /**
-     * @var EntityManager
-     */
-    private $entityManager;
-
-    /**
      * ApiController constructor.
      * @param \App\Model\Device\Device $device
      * @param ChangeState $changeState
-     * @param EntityManagerInterface $manager
      * @throws \Exception
      */
-    public function __construct(\App\Model\Device\Device $device, ChangeState $changeState, EntityManagerInterface $manager)
+    public function __construct(\App\Model\Device\Device $device, ChangeState $changeState)
     {
         $this->deviceModel = $device;
         $this->changeState = $changeState;
         $this->logger = Logger::getLogger('consumer/device', Logger::INFO, 'consumer');
-        $this->entityManager = $manager;
     }
 
     /**
@@ -60,8 +53,6 @@ class Device extends ConsumerAbstract implements ConsumerInterface
      */
     public function execute(AMQPMessage $msg)
     {
-        parent::check($this->entityManager);
-
         $body = (array)json_decode($msg->getBody());
 
         try{
