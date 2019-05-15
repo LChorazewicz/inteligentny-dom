@@ -2,10 +2,7 @@ old_sound_rabbit_mq:
     connections:
         default:
             url: '%env(RABBITMQ_URL)%'
-#    producers:
-#        device:
-#            connection:       default
-#            exchange_options: { name: 'device', type: direct }
+            vhost: '/'
     consumers:
         device:
             connection:       default

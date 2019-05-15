@@ -11,11 +11,8 @@ namespace App\Consumer;
 
 use App\Service\DeviceManagement\ChangeState;
 use App\Tools\Logger;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
-use Psr\Log\LoggerInterface;
 
 class Device extends ConsumerAbstract implements ConsumerInterface
 {
@@ -29,10 +26,6 @@ class Device extends ConsumerAbstract implements ConsumerInterface
      */
     private $changeState;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
 
     /**
      * ApiController constructor.
@@ -42,17 +35,20 @@ class Device extends ConsumerAbstract implements ConsumerInterface
      */
     public function __construct(\App\Model\Device\Device $device, ChangeState $changeState)
     {
+        parent::__construct(Logger::getLogger('consumer/device', Logger::INFO, 'consumer'));
         $this->deviceModel = $device;
         $this->changeState = $changeState;
-        $this->logger = Logger::getLogger('consumer/device', Logger::INFO, 'consumer');
     }
 
     /**
      * @param AMQPMessage $msg The message
      * @return mixed false to reject and requeue, any other value to acknowledge
+     * @throws \Exception
      */
     public function execute(AMQPMessage $msg)
     {
+        parent::check();
+
         $body = (array)json_decode($msg->getBody());
 
         try{
