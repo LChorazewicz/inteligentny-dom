@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Repository\ConsumerRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -9,13 +10,24 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class AppInstallCommand extends Command
 {
-    protected static $defaultName = 'app-install';
+    protected static $defaultName = 'refresh-system';
+
+    /**
+     * @var ConsumerRepository
+     */
+    private $consumer;
 
     protected function configure()
     {
         $this
-            ->setDescription('Create app config - run with sudo privileges')
+            ->setDescription('sudo bin/console refresh-system')
         ;
+    }
+
+    public function __construct(ConsumerRepository $consumerRepository)
+    {
+        parent::__construct();
+        $this->consumer = $consumerRepository;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -23,7 +35,6 @@ class AppInstallCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $env = $_ENV['APP_ENV'];
         $supervisiorDir = $_ENV['SUPERVISOR_DIR'];
-
         if ($env && $supervisiorDir) {
             try{
                 $io->block($this->clearLogs());
@@ -40,17 +51,14 @@ class AppInstallCommand extends Command
 
     private function updateSupervisiorConfigFiles(string $supervisorDir): string
     {
-        //todo: from db, current dir
-        $consummers = [
-            ['name' => 'device', 'status' => 1, 'quantity' => 1],
-        ];
+        $consumers = $this->consumer->findAll();
 
         $projectDir = $_ENV['PROJECT_DIR'];
         $msg = '';
-        foreach ($consummers as $consummer){
-            $name = $consummer['name'];
-            $quantity = $consummer['quantity'];
-            if($consummer['status'] === 1){
+        foreach ($consumers as $consumer){
+            $name = $consumer->getName();
+            $quantity = $consumer->getProcessNumber();
+            if($consumer->getStatus() === true){
                 $configContent = <<<HEREDOC
 [program:$name]
 command=php bin/console rabbitmq:consumer -m 100 $name
@@ -65,7 +73,7 @@ stderr_logfile=$projectDir/var/log/supervisor.log
 HEREDOC;
                 file_put_contents($supervisorDir . $name . '.conf', $configContent);
                 $msg = 'config added to ' . $supervisorDir . $name . '.conf';
-            }elseif($consummer['status'] === 0){
+            }elseif($consumer['status'] === 0){
                 unlink($supervisorDir . $name . '.conf');
                 $msg = 'config removed from ' . $supervisorDir . $name . '.conf';
             }
