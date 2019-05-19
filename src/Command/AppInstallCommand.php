@@ -95,6 +95,7 @@ HEREDOC;
     private function supervisorRestart(): string
     {
         $msg = exec('service supervisor restart');
+        sleep(5);
         return !empty($msg) ? $msg : 'Supervisor service restated';
     }
 
