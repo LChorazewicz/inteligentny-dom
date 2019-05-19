@@ -3,11 +3,12 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
-class User
+class User implements UserInterface
 {
     /**
      * @ORM\Id()
@@ -17,79 +18,68 @@ class User
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=32)
+     * @ORM\Column(type="string", length=180, unique=true)
      */
-    private $name;
+    private $username;
 
     /**
-     * @ORM\Column(type="string", length=32)
+     * @ORM\Column(type="json")
      */
-    private $surname;
+    private $roles = [];
 
     /**
-     * @ORM\Column(type="string", length=32)
-     */
-    private $login;
-
-    /**
-     * @ORM\Column(type="string", length=255)
+     * @var string The hashed password
+     * @ORM\Column(type="string")
      */
     private $password;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $active;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $created_at;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getName(): ?string
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUsername(): string
     {
-        return $this->name;
+        return (string) $this->username;
     }
 
-    public function setName(string $name): self
+    public function setUsername(string $username): self
     {
-        $this->name = $name;
+        $this->username = $username;
 
         return $this;
     }
 
-    public function getSurname(): ?string
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
     {
-        return $this->surname;
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
     }
 
-    public function setSurname(string $surname): self
+    public function setRoles(array $roles): self
     {
-        $this->surname = $surname;
+        $this->roles = $roles;
 
         return $this;
     }
 
-    public function getLogin(): ?string
+    /**
+     * @see UserInterface
+     */
+    public function getPassword(): string
     {
-        return $this->login;
-    }
-
-    public function setLogin(string $login): self
-    {
-        $this->login = $login;
-
-        return $this;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
+        return (string) $this->password;
     }
 
     public function setPassword(string $password): self
@@ -99,27 +89,20 @@ class User
         return $this;
     }
 
-    public function getActive(): ?bool
+    /**
+     * @see UserInterface
+     */
+    public function getSalt()
     {
-        return $this->active;
+        // not needed when using the "bcrypt" algorithm in security.yaml
     }
 
-    public function setActive(bool $active): self
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
     {
-        $this->active = $active;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(\DateTimeInterface $created_at): self
-    {
-        $this->created_at = $created_at;
-
-        return $this;
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 }
