@@ -101,7 +101,7 @@ HEREDOC;
     private function addPermissions()
     {
         $projectDir = $_ENV['PROJECT_DIR'];
-        $msg = exec('chmod 777 ' . $projectDir . '/var/* && chown www-data:www-data ' . $projectDir . '/var/* -R');
+        $msg = exec('chmod 777 ' . $projectDir . '/var/* && sudo chown www-data:www-data ' . $projectDir . '/var/* -R');
         return !empty($msg) ? $msg : 'Permissions added to ' . $projectDir . '/var/*';
     }
 }
