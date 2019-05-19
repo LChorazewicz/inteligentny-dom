@@ -9,6 +9,7 @@
 namespace App\Tests\Service\DeviceManagement;
 
 use App\Entity\Device;
+use App\Model\Device\DeviceAction;
 use App\Model\Device\DeviceDirection;
 use App\Model\Device\DeviceType;
 use App\Model\Device\StateType;
@@ -30,7 +31,6 @@ class BlindsTest extends KernelTestCase
 
     /**
      * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function setUp(): void
     {
@@ -77,6 +77,7 @@ class BlindsTest extends KernelTestCase
             ->setName('roleta prawa')
             ->setDeviceType(DeviceType::BLINDS)
             ->setStatus(true)
+            ->setStatus(DeviceAction::INACTIVE)
             ->setPins([1,2]);
 
         $deviceId = $this->deviceModel->addDevice($blinds);

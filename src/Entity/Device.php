@@ -57,6 +57,11 @@ class Device
     private $status;
 
     /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $currentAction;
+
+    /**
      * @return int
      */
     public function getId(): int
@@ -210,6 +215,24 @@ class Device
     public function setDeviceDirection($deviceDirection)
     {
         $this->deviceDirection = $deviceDirection;
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getCurrentAction(): ?int
+    {
+        return $this->currentAction;
+    }
+
+    /**
+     * @param int|null $currentAction
+     * @return Device
+     */
+    public function setCurrentAction(?int $currentAction): Device
+    {
+        $this->currentAction = $currentAction;
         return $this;
     }
 }

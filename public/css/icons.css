@@ -28,6 +28,12 @@ i.icon{
     height: 40px;
 }
 
+.icon-drive{
+    background-image: url("../img/drive.svg");
+    width: 40px;
+    height: 40px;
+}
+
 .icon-user{
     background-image: url("../img/user.svg");
     width: 40px;

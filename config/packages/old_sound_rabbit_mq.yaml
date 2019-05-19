@@ -1,0 +1,12 @@
+old_sound_rabbit_mq:
+    connections:
+        default:
+            url: '%env(RABBITMQ_URL)%'
+            vhost: '/'
+    consumers:
+        device:
+            connection:       default
+            exchange_options: { name: 'device', type: direct }
+            queue_options:    { name: 'device'}
+            callback:         App\Consumer\Device
+            qos_options:      {prefetch_size: 0, prefetch_count: 1, global: false}
