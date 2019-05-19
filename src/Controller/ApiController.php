@@ -68,6 +68,26 @@ class ApiController extends AbstractController
     }
 
     /**
+     * @param int $id
+     * @return JsonResponse
+     * @throws \Exception
+     * @Route("/device/get/{id}", name="api-get-device")
+     */
+    public function getdeviceinfo(int $id)
+    {
+        $deviceId = $id > 0 ? $id : null;
+
+        $result = [];
+        if(!is_null($deviceId)){
+            $device = $this->deviceModel->getDevice($deviceId);
+            if(!empty($device)){
+                $result = $this->deviceModel->mapDeviceToDto($device);
+            }
+        }
+        return new JsonResponse($result);
+    }
+
+    /**
      * @param Request $request
      * @return JsonResponse
      * @throws \Exception
