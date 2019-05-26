@@ -3,8 +3,6 @@
 namespace App\Controller;
 
 use App\Service\DeviceManagement\ChangeState;
-use App\Service\Producers\DeviceProducer;
-use PhpAmqpLib\Message\AMQPMessage;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;

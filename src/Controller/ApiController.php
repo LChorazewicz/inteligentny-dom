@@ -55,7 +55,9 @@ class ApiController extends AbstractController
      */
     public function changedevicestate(Request $request)
     {
-        $deviceId = $request->request->get('deviceId', null);
+        $json = json_decode($request->getContent());
+
+        $deviceId = $json->deviceId ?? null;
 
         if($request->isMethod(Request::METHOD_POST)){
             $device = $this->deviceModel->getDevice($deviceId);
@@ -68,6 +70,26 @@ class ApiController extends AbstractController
     }
 
     /**
+     * @param int $id
+     * @return JsonResponse
+     * @throws \Exception
+     * @Route("/device/get/{id}", name="api-get-device")
+     */
+    public function getdeviceinfo(int $id)
+    {
+        $deviceId = $id > 0 ? $id : null;
+
+        $result = [];
+        if(!is_null($deviceId)){
+            $device = $this->deviceModel->getDevice($deviceId);
+            if(!empty($device)){
+                $result = $this->deviceModel->mapDeviceToDto($device);
+            }
+        }
+        return new JsonResponse($result);
+    }
+
+    /**
      * @param Request $request
      * @return JsonResponse
      * @throws \Exception
@@ -75,8 +97,10 @@ class ApiController extends AbstractController
      */
     public function correctrotation(Request $request)
     {
-        $deviceId = $request->request->get('deviceId', null);
-        $rotation = $request->request->get('rotation', null);
+        $json = json_decode($request->getContent());
+
+        $deviceId = $json->deviceId ?? null;
+        $rotation = $json->rotation ?? null;
 
         if($request->isMethod(Request::METHOD_POST)){
             $device = $this->deviceModel->getDevice($deviceId);
@@ -96,8 +120,10 @@ class ApiController extends AbstractController
      */
     public function setrotation(Request $request, DeviceProducer $deviceProducer)
     {
-        $deviceId = $request->request->get('deviceId', null);
-        $step = $request->request->get('step', null);
+        $json = json_decode($request->getContent());
+
+        $deviceId = $json->deviceId ?? null;
+        $step = $json->step ?? null;
 
         if($request->isMethod(Request::METHOD_POST)){
             $device = $this->deviceModel->getDevice($deviceId);
@@ -124,8 +150,10 @@ class ApiController extends AbstractController
      */
     public function setpercentrotation(Request $request, DeviceProducer $deviceProducer)
     {
-        $deviceId = $request->request->get('deviceId', null);
-        $percent = $request->request->get('percent', null);
+        $json = json_decode($request->getContent());
+
+        $deviceId = $json->deviceId ?? null;
+        $percent = $json->percent ?? null;
 
         if($request->isMethod(Request::METHOD_POST)){
             $device = $this->deviceModel->getDevice($deviceId);
@@ -136,9 +164,6 @@ class ApiController extends AbstractController
                     $message->setBody(json_encode(['device_id' => $deviceId, 'step' => $step]));
                     $deviceProducer->publish($message);
                     $deviceProducer->disconnect();
-//
-//                    $consumer = new Device($this->deviceModel, $this->changeState);
-//                    $consumer->execute($message);
                 }catch (\Exception $e){
                     $this->logger->error($e->getMessage());
                 }

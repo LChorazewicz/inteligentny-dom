@@ -1,0 +1,29 @@
+{% extends 'security/base.security.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+    <div class="login-container bg-color-light">
+        <div class="login-form">
+            <form method="post">
+                {% if error %}
+                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
+                <span>Login panel</span>
+                <div>
+                    <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="login-input"
+                           placeholder="Username" required autofocus>
+                </div>
+                <div>
+                    <input type="password" name="password" id="inputPassword" class="login-input" placeholder="Password" required>
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <button class="login-button" type="submit">
+                    Sign in
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
