@@ -23,7 +23,7 @@ class User implements UserInterface
     private $username;
 
     /**
-     * @ORM\Column(type="json")
+     * @ORM\Column(type="string")
      */
     private $roles = [];
 
@@ -34,7 +34,7 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\Column(type="string", unique=true)
+     * @ORM\Column(type="string", unique=false)
      */
     private $apiToken;
 
