@@ -6,7 +6,10 @@ class Application {
             data: {
                 deviceId: deviceId,
                 rotation: option
-            }
+            },
+            beforeSend: function(request) {
+                request.setRequestHeader("X-AUTH-TOKEN", "asd");
+            },
         }).done(function(response, responseText) {
             console.log(response);
         });
@@ -30,7 +33,10 @@ class Application {
             method: "GET",
             data: {
                 device_id: deviceId,
-            }
+            },
+            beforeSend: function(request) {
+                request.setRequestHeader("X-AUTH-TOKEN", "asd");
+            },
         }).done(callback);
     }
 
@@ -161,7 +167,10 @@ class Application {
             data: {
                 deviceId: deviceId,
                 step: step
-            }
+            },
+            beforeSend: function(request) {
+                request.setRequestHeader("X-AUTH-TOKEN", "asd");
+            },
         }).done(function(response) {
             console.log("step: " + step, response);
             context.updateModal('modal-device-' + deviceId, response);
@@ -175,7 +184,10 @@ class Application {
             method: "POST",
             data: {
                 deviceId: deviceId
-            }
+            },
+            beforeSend: function(request) {
+                request.setRequestHeader("X-AUTH-TOKEN", "asd");
+            },
         }).done(function(response) {
             console.log(response);
             context.updateModal('modal-device-' + deviceId, response)
@@ -190,11 +202,15 @@ class Application {
         let context = this;
         $.ajax({
             url: Endpoint.getMovePercentBlindsEndpoint(),
+            datatype : "application/json",
             method: "POST",
-            data: {
+            beforeSend: function(request) {
+                request.setRequestHeader("X-AUTH-TOKEN", "asd");
+            },
+            data: JSON.stringify({
                 deviceId: deviceId,
                 percent: percent
-            }
+            })
         }).done(function(response) {
             console.log("step: " + step, response);
             context.updateModal('modal-device-' + deviceId, response);
