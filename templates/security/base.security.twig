@@ -1,0 +1,33 @@
+<html lang="pl">
+<head>
+    <link rel="stylesheet" type="text/css" href="../public/css/icons.css"/>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="{{ asset('css/style.main.css') }}" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ asset('img/smartphone.svg') }}" >
+    <title>{% block title %}Home control system{% endblock %}</title>
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+<header class="col-12 bg-color-light float-left">
+    <section class="col-12 navigation bg-color-light float-left">
+        <a href="{{ path('dashboard') }}" class="float-left">
+            <i class="icon icon-homecontrol"></i>
+            <span>Home control system</span>
+        </a>
+    </section>
+</header>
+
+<main class="col-12">
+    {% block body %}{% endblock %}
+</main>
+
+<script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+
+{% block javascripts %}
+
+{% endblock %}
+
+</body>
+</html>
